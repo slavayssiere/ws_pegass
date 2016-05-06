@@ -9,14 +9,15 @@ get '/' do
 end
 
 
-get '/connect/:username/' do
-  'Hello world!'
+get '/connect' do
+  pegass = Pegass.new
+  cookie = pegass.connect(params['username'], params['password'])
 end
 
 get '/benevoles' do
    pegass = Pegass.new
-   pegass.connect(settings.username, settings.password)
-   
+   #pegass.connect(settings.username, settings.password)
+   pegass.connect(params['username'], params['password'])
    benevoles = pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
 
    "#{benevoles}"
@@ -24,7 +25,7 @@ end
 
 get '/benevoles/nominations/:nivol' do
    pegass = Pegass.new
-   pegass.connect(settings.username, password)
+   pegass.connect(params['username'], params['password'])
    
    path = "/crf/rest/nominationutilisateur?utilisateur=#{params['nivol']}"
    

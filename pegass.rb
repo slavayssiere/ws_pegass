@@ -30,9 +30,9 @@ class Pegass
         search_form.field_with(:name => "password").value  = password
         search_form.field_with(:name => "vhost").value = "standard"
 
-        page = agent.submit search_form
+        page = @agent.submit search_form
 
-        
+        return @agent.cookie_jar
     end
     
     def displayCookies()
