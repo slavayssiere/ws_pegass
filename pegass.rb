@@ -44,7 +44,7 @@ class Pegass
     end
     
     def callUrl(path)
-        puts "Get " + path
+        # puts "Get " + path
         url_path = @url + path
         page = @agent.get url_path
         return JSON.parse(page.body)
