@@ -2,6 +2,7 @@ require 'sinatra'
 require 'sinatra/config_file' # gem install sinatra-contrib
 require './pegass.rb'
 require './recyclage.rb'
+require './emails.rb'
 
 config_file './config.yml'
 
@@ -34,8 +35,15 @@ get '/benevoles/recyclages' do
 end
 
 get '/benevoles/com' do
+   email = Emails.new(params['username'], params['password'])
+   emails_ret = email.listStructure
+   
+   "#{emails_ret}"
+end
+
+get '/benevoles/com/:competence' do
    emails = Emails.new(params['username'], params['password'])
-   emails_ret = emails.listStructure
+   emails_ret = emails.listStructureWithCompetence(params['competence'])
    
    "#{emails_ret}"
 end

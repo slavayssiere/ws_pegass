@@ -2,8 +2,8 @@ require './pegass.rb'
 require 'json'
 require './emails.rb'
 
-emails = Emails.new('****','***')
-list = emails.listStructure
+emails = Emails.new('lavayssieres','****')
+list = emails.listStructureWithCompetence('CIP2')
 
 puts list
 
