@@ -19,10 +19,10 @@ class Pegass
         url_root = @url + path_root
         url_policy = @url + path_policy
         
-        puts "First call"        
+        # puts "First call"        
         policy_page = @agent.get url_root
         
-        puts "Post credential on " + url_policy + " with " + @agent.cookie_jar.inspect
+        # puts "Post credential on " + url_policy + " with " + @agent.cookie_jar.inspect
         policy_page = @agent.get url_policy
 
         search_form = policy_page.form_with :name => "e1"
@@ -32,7 +32,20 @@ class Pegass
 
         page = @agent.submit search_form
 
-        return @agent.cookie_jar
+        result = { 
+            'state' => 'false'            
+        }
+        
+        agent.cookie_jar.each do |site|
+            puts site
+            if site.to_s.include? 'F5_ST'  
+                result = {
+                    'state' => 'true'
+                }
+            end
+        end        
+        
+        return result
     end
     
     def displayCookies()

@@ -12,7 +12,9 @@ end
 
 get '/connect' do
   pegass = Pegass.new
-  cookie = pegass.connect(params['username'], params['password'])
+  result = pegass.connect(params['username'], params['password'])
+  
+  "#{result}"
 end
 
 get '/benevoles' do
@@ -29,6 +31,13 @@ get '/benevoles/recyclages' do
    recyclages = recyclage.listStructure
    
    "#{recyclages}"
+end
+
+get '/benevoles/com' do
+   emails = Emails.new(params['username'], params['password'])
+   emails_ret = emails.listStructure
+   
+   "#{emails_ret}"
 end
 
 get '/benevoles/nominations/:nivol' do
