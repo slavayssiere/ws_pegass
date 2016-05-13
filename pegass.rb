@@ -32,6 +32,7 @@ class Pegass
 
         page = @agent.submit search_form
 
+        boolConnect = false
         result = { 
             'state' => 'false'            
         }
@@ -39,13 +40,12 @@ class Pegass
         agent.cookie_jar.each do |site|
             puts site
             if site.to_s.include? 'F5_ST'  
-                result = {
-                    'state' => 'true'
-                }
+                result = callUrl('/crf/rest/gestiondesdroits')                
+                boolConnect = true
             end
         end        
         
-        return result
+        return result, boolConnect
     end
     
     def displayCookies()

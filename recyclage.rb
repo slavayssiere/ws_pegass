@@ -29,7 +29,7 @@ class Recyclage
                 }
             end 
         end
-        return recyclage_struct.to_json
+        return recyclage_struct
     end
     
     def benevole(nivol)
