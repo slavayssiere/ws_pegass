@@ -41,36 +41,62 @@ end
 get '/benevoles' do
    pegass = Pegass.new
    #pegass.connect(settings.username, settings.password)
-   pegass.connect(params['username'], params['password'])
+   #pegass.connect(params['username'], params['password'])
+   pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    benevoles = pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
 
    "#{benevoles}"
 end
 
 get '/benevoles/recyclages' do
-   recyclage = Recyclage.new(params['username'], params['password'])
+   puts params
+   
+   recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    recyclages = recyclage.listStructure
    
    "#{recyclages.to_json}"
 end
 
+get '/benevoles/recyclages/:competence' do
+   puts params
+   
+   recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   recyclages = recyclage.listStructureCompetence(params['competence'])
+   
+   "#{recyclages.to_json}"
+end
+
 get '/benevoles/com' do
-   email = Emails.new(params['username'], params['password'])
+   email = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    emails_ret = email.listStructure
    
    "#{emails_ret.to_json}"
 end
 
 get '/benevoles/com/:competence' do
-   emails = Emails.new(params['username'], params['password'])
+   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    emails_ret = emails.listStructureWithCompetence(params['competence'])
+   
+   "#{emails_ret.to_json}"
+end
+
+get '/benevoles/com/without/:competence' do
+   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   emails_ret = emails.listStructureWithoutCompetence(params['competence'])
+   
+   "#{emails_ret.to_json}"
+end
+
+get '/benevoles/com/without/:nocompetence/with/:competence' do
+   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   emails_ret = emails.listStructureComplexe(params['competence'], params['nocompetence'])
    
    "#{emails_ret.to_json}"
 end
 
 get '/benevoles/nominations/:nivol' do
    pegass = Pegass.new
-   pegass.connect(params['username'], params['password'])
+   pegass.connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    
    path = "/crf/rest/nominationutilisateur?utilisateur=#{params['nivol']}"
    

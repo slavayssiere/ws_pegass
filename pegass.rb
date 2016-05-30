@@ -32,27 +32,67 @@ class Pegass
 
         page = @agent.submit search_form
 
-        boolConnect = false
-        result = { 
-            'state' => 'false'            
-        }
+        boolConnect = false                  
+        result = {}
+        last = ""
+        session = ""
         
         agent.cookie_jar.each do |site|
             puts site
             if site.to_s.include? 'F5_ST'  
-                result = callUrl('/crf/rest/gestiondesdroits')                
-                boolConnect = true
-            end
+                result = callUrl('/crf/rest/gestiondesdroits') 
+                result['F5_ST']=site.to_s.split('=')[1]
+                boolConnect = true            
+            end    
+            if site.to_s.include? 'LastMRH_Session'  
+                last=site.to_s.split('=')[1]            
+            end  
+            if site.to_s.include? 'MRHSession'  
+                session=site.to_s.split('=')[1]
+            end          
         end        
         
+        result['LastMRH_Session']=last
+        result['MRHSession']=session
+        result['state']=boolConnect
+         
         return result, boolConnect
     end
     
+    def f5connect(token, last, session)  
+        puts token
+        puts last
+        puts session
+              
+        cookie_f5 = Mechanize::Cookie.new("F5_ST", token)
+        cookie_f5.domain = "pegass.croix-rouge.fr"
+        cookie_f5.path = "/"
+        cookie_f5.secure = true
+        cookie_f5.origin = "https://pegass.croix-rouge.fr/my.policy"
+        @agent.cookie_jar.add(cookie_f5)      
+        
+        cookie_last = Mechanize::Cookie.new("LastMRH_Session", last)
+        cookie_last.domain = "pegass.croix-rouge.fr"
+        cookie_last.path = "/"
+        cookie_last.secure = true
+        cookie_last.origin = "https://pegass.croix-rouge.fr/my.policy"
+        @agent.cookie_jar.add(cookie_last)
+        
+        cookie_session = Mechanize::Cookie.new("MRHSession", session)
+        cookie_session.domain = "pegass.croix-rouge.fr"
+        cookie_session.path = "/"
+        cookie_session.secure = true
+        cookie_session.origin = "https://pegass.croix-rouge.fr/my.policy"
+        @agent.cookie_jar.add(cookie_session)          
+         
+        return true
+    end
+    
     def displayCookies()
-        puts agent.cookie_jar.inspect
+        #puts agent.cookie_jar.inspect
         
         agent.cookie_jar.each do |site|
-            puts site
+            puts site.inspect
         end
     end
     

@@ -1,34 +1,24 @@
 require './pegass.rb'
 require 'json'
 require './emails.rb'
-
-emails = Emails.new('lavayssieres','nvv59Js4')
-list = emails.listStructure
-
-result = ""
-list['list'].each do |com|
-    if com['email']
-        result=result+"; "+com['email']
-        puts com['email']
-    end
-end
-
-puts result
+require './recyclage.rb'
 
 
 pegass = Pegass.new
-result = pegass.connect("*****", "****")
-if result['state'] != 'false'
-    
-    puts result
-    pegass.displayCookies
-    benevoles = pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+result, boolConnect = pegass.connect("lavayssieres", "nvv59Js4")
 
-    benevoles['list'].each do | benevole |
-    # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
-    puts benevole
-    end
+puts result
+pegass.displayCookies
 
+
+#pegass.f5connect(result['F5_ST'], result['LastMRH_Session'], result['MRHSession'])
+# test = pegass.callUrl('/crf/rest/gestiondesdroits')
+
+recyclage = Recyclage.new(result['F5_ST'], result['LastMRH_Session'], result['MRHSession'])
+recyclage.pegass.displayCookies
+recyclages = recyclage.listStructure
+
+puts recyclages 
 
     # list compétences: https://pegass.croix-rouge.fr/crf/rest/competences
     # list moyen com: https://pegass.croix-rouge.fr/crf/rest/moyencom
@@ -37,6 +27,3 @@ if result['state'] != 'false'
     # https://pegass.croix-rouge.fr/crf/rest/nominationutilisateur?utilisateur='nivol'
     # https://pegass.croix-rouge.fr/crf/rest/formationutilisateur?utilisateur='nivol'
     # https://pegass.croix-rouge.fr/crf/rest/moyencomutilisateur?utilisateur='nivol'
-else
-    puts 'error in login'
-end
