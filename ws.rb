@@ -45,7 +45,7 @@ get '/benevoles' do
    pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    benevoles = pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
 
-   "#{benevoles}"
+   "#{benevoles.to_json}"
 end
 
 get '/benevoles/recyclages' do
@@ -88,8 +88,13 @@ get '/benevoles/com/without/:competence' do
 end
 
 get '/benevoles/com/without/:nocompetence/with/:competence' do
+  begin
    emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   emails_ret = emails.listStructureComplexe(params['competence'], params['nocompetence'])
+   emails_ret = emails.listStructureComplexe(params['competence'], params['nocompetence'])    
+   status 200
+  rescue => exception
+   status 401
+  end
    
    "#{emails_ret.to_json}"
 end

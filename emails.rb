@@ -111,10 +111,12 @@ class Emails
                 retCompetence = true
             end
             if formation['formation']['code']==nocompetence
-                retCompetence = false
+                retNoCompetence = false
             end
-        end
+        end        
 
+        # puts "true, PPNM:#{retNoCompetence}, PSE1:#{retCompetence} #{formations}"
+        
         if(retCompetence && retNoCompetence)
             moyenscom.each do | com |
                 benevole_com['nivol']=nivol
@@ -124,7 +126,7 @@ class Emails
                 if com['moyenComId']=='POR'
                     benevole_com['portable']=com['libelle']                
                 end
-            end
+            end 
         end
         
         ret = retCompetence && retNoCompetence
@@ -135,13 +137,26 @@ class Emails
     def benevoleWithCompetence(nivol, competence)
         moyenscom = pegass.callUrl("/crf/rest/moyencomutilisateur?utilisateur=#{nivol}")
         ret = false
-        benevole_com = {}
+        benevole_com = {}        
+        endOfYear = Date.parse("#{Date.today.year}-12-31")
         
         formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
             
         formations.each do | formation |
             if formation['formation']['code']==competence
-                ret = true
+                if(formation['dateRecyclage'])
+                    dateRecyclage = Date.parse formation['dateRecyclage']
+                    avantRecyclage = endOfYear - dateRecyclage
+                    
+                    puts "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
+                    
+                    if(avantRecyclage <= 0)
+                        ret = true
+                    end
+                else
+                    ret = true
+                end                
+                break
             end
         end 
         
