@@ -101,7 +101,7 @@ end
 
 get '/benevoles/nominations/:nivol' do
    pegass = Pegass.new
-   pegass.connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    
    path = "/crf/rest/nominationutilisateur?utilisateur=#{params['nivol']}"
    
