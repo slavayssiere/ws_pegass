@@ -10,8 +10,8 @@ class Recyclage
         result, boolConnect = @pegass.f5connect(token, last, session)
     end
     
-    def listStructure()
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+    def listStructure(ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         unite = {}
         unite['list']=[]
@@ -79,8 +79,8 @@ class Recyclage
         return bARecycler, dateRecyclage
     end
     
-    def listStructureCompetence(competence)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+    def listStructureCompetence(competence, ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         unite = {}
         unite['list']=[]

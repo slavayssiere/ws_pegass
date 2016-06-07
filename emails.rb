@@ -10,8 +10,8 @@ class Emails
         result, boolConnect = @pegass.f5connect(token, last, session)
     end
     
-    def listStructure()
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+    def listStructure(ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         moyenscom = {}
         moyenscom['list']=[]
@@ -43,8 +43,8 @@ class Emails
         return benevole_com
     end
     
-    def listStructureWithCompetence(competence)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+    def listStructureWithCompetence(competence, ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         moyenscom = {}
         moyenscom['list']=[]
@@ -62,8 +62,8 @@ class Emails
         return moyenscom
     end        
     
-    def listStructureWithoutCompetence(competence)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+    def listStructureWithoutCompetence(competence, ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         moyenscom = {}
         moyenscom['list']=[]
@@ -80,8 +80,8 @@ class Emails
         return moyenscom
     end
     
-    def listStructureComplexe(competence, nocompetence)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action=899&page=0&pageInfo=true&perPage=600&structure=899')
+    def listStructureComplexe(competence, nocompetence, ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         moyenscom = {}
         moyenscom['list']=[]
