@@ -22,7 +22,7 @@ options "*" do
 end
 
 get '/' do
-  'Hello world!'
+  'Hello world, pegass ws!'
 end
 
 
