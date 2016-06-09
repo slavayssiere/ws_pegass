@@ -8,6 +8,8 @@ require './competences.rb'
 
 config_file './config.yml'
 
+set :bind, '0.0.0.0'
+
 configure do
   puts 'Enable cross_origin'
   enable :cross_origin
@@ -135,4 +137,16 @@ get '/benevoles/nominations/:nivol' do
    nominations = pegass.callUrl(path)
 
    "#{nominations.to_json}"
+end
+
+get '/benevoles/emails/:list_nivol' do
+begin
+   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   emails_ret = emails.getEmailList(params['list_nivol'])
+   status 200
+  rescue => exception
+   status 401
+  end
+   
+  "#{emails_ret.to_json}"
 end
