@@ -108,7 +108,7 @@ class Competences
                     dateRecyclage = Date.parse formation['dateRecyclage']
                     avantRecyclage = endOfYear - dateRecyclage
                     
-                    puts "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
+                    # puts "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
                     
                     if(avantRecyclage <= 0)
                         ret = true

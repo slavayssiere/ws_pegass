@@ -62,21 +62,29 @@ class Recyclage
         
         dateRecyclage = ""
         bARecycler = false
+        outOfdate = false
         recyclage_bene={}
         formations.each do | formation |
             if formation['formation']['code'] == competence
                 if(formation['dateRecyclage'])
                     dateRecyclage = Date.parse formation['dateRecyclage']
                     avantRecyclage = endOfYear - dateRecyclage
+                    
+                    # puts "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
+                    
                     if(avantRecyclage >= 0)
                         bARecycler = true
+                    end
+                    
+                    if(avantRecyclage > 365)
+                        outOfdate = true
                     end
                 end
                 break
             end
         end
         
-        return bARecycler, dateRecyclage
+        return bARecycler, outOfdate, dateRecyclage
     end
     
     def listStructureCompetence(competence, ul)
@@ -84,22 +92,26 @@ class Recyclage
 
         unite = {}
         unite['list']=[]
+        unite['out']=[]
 
         benevoles['list'].each do | benevole |
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
             data_bene={}
-            bARecycler, dateRecyclage = benevoleCompetence(benevole['id'], competence)
+            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competence)
             
             if(bARecycler)
-                # puts "#{benevole['nom']}: #{list_formation}"
+                # puts "#{benevole['nom']}"
                 data_bene['nivol']=benevole['id']
                 data_bene['nom']=benevole['nom']
                 data_bene['prenom']=benevole['prenom']
                 data_bene['date']=dateRecyclage
                 
-                
-                unite['list'].push data_bene 
+                if(outOfdate)
+                    unite['out'].push data_bene
+                else
+                    unite['list'].push data_bene
+                end 
             end 
         end
         return unite
