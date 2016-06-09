@@ -4,6 +4,7 @@ require 'sinatra/cross_origin'
 require './pegass.rb'
 require './recyclage.rb'
 require './emails.rb'
+require './competences.rb'
 
 config_file './config.yml'
 
@@ -39,64 +40,88 @@ get '/connect' do
 end
 
 get '/benevoles' do
+  begin
    pegass = Pegass.new
-   #pegass.connect(settings.username, settings.password)
-   #pegass.connect(params['username'], params['password'])
    pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    benevoles = pegass.callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=600&structure='+params['ul'])
+   status 200
+  rescue => exception
+   status 401
+  end
 
    "#{benevoles.to_json}"
 end
 
 get '/benevoles/recyclages' do
-   puts params
-   
+  begin   
    recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    recyclages = recyclage.listStructure(params['ul'])
+   status 200
+  rescue => exception
+   status 401
+  end
    
-   "#{recyclages.to_json}"
+  "#{recyclages.to_json}"
 end
 
 get '/benevoles/recyclages/:competence' do
-   puts params
-   
+  begin
    recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    recyclages = recyclage.listStructureCompetence(params['competence'], params['ul'])
+   status 200
+  rescue => exception
+   status 401
+  end
    
-   "#{recyclages.to_json}"
+  "#{recyclages.to_json}"
 end
 
 get '/benevoles/com' do
-   email = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   emails_ret = email.listStructure(params['ul'])
-   
-   "#{emails_ret.to_json}"
-end
-
-get '/benevoles/com/:competence' do
-   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   emails_ret = emails.listStructureWithCompetence(params['competence'], params['ul'])
-   
-   "#{emails_ret.to_json}"
-end
-
-get '/benevoles/com/without/:competence' do
-   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   emails_ret = emails.listStructureWithoutCompetence(params['competence'], params['ul'])
-   
-   "#{emails_ret.to_json}"
-end
-
-get '/benevoles/com/without/:nocompetence/with/:competence' do
   begin
-   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   emails_ret = emails.listStructureComplexe(params['competence'], params['nocompetence'], params['ul'])    
+   email = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   emails_ret = email.listStructure(params['ul'])   
    status 200
   rescue => exception
    status 401
   end
    
    "#{emails_ret.to_json}"
+end
+
+get '/benevoles/competences/:competence/yes' do
+  begin
+   comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   comp_ret = comp.listStructureWithCompetence(params['competence'], params['ul'])
+   status 200
+  rescue => exception
+   status 401
+  end
+  
+  "#{comp_ret.to_json}"
+end
+
+get '/benevoles/competences/:competence/no' do
+  begin
+   comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'])
+   status 200
+  rescue => exception
+   status 401
+  end
+   
+  "#{comp_ret.to_json}"
+end
+
+get '/benevoles/competences/:nocompetence/no/:competence/yes' do
+  begin
+   comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   comp_ret = comp.listStructureComplexe(params['competence'], params['nocompetence'], params['ul'])    
+   status 200
+  rescue => exception
+   status 401
+  end
+   
+  "#{emails_ret.to_json}"
 end
 
 get '/benevoles/nominations/:nivol' do
