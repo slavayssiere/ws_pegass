@@ -13,30 +13,30 @@ class Competences
     def listStructureWithCompetence(competence, ul)
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
-        competence = {}
-        competence['list']=[]
+        competence_ul = {}
+        competence_ul['list']=[]
         benevoles['list'].each do | benevole |
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
             ret = benevoleWithCompetence(benevole['id'], competence)
-            
+                        
             if ret==true
                 comp_bene = {}
                 comp_bene['nivol']=benevole['id']
                 comp_bene['prenom']=benevole['prenom']
                 comp_bene['nom']=benevole['nom']
-                competence['list'].push comp_bene                
+                competence_ul['list'].push comp_bene                
             end
                         
         end
-        return competence
+        return competence_ul
     end        
     
     def listStructureWithoutCompetence(competence, ul)
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
-        competence = {}
-        competence['list']=[]
+        competence_ul = {}
+        competence_ul['list']=[]
         benevoles['list'].each do | benevole |
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
@@ -46,39 +46,39 @@ class Competences
                 comp_bene['nivol']=benevole['id']
                 comp_bene['prenom']=benevole['prenom']
                 comp_bene['nom']=benevole['nom']
-                competence['list'].push comp_bene               
+                competence_ul['list'].push comp_bene               
             end
                         
         end
-        return competence
+        return competence_ul
     end
     
     def listStructureComplexe(competence, nocompetence, ul)
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
-        competence = {}
-        competence['list']=[]
+        competence_ul = {}
+        competence_ul['list']=[]
         benevoles['list'].each do | benevole |
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
             ret = benevoleComplexe(benevole['id'], competence, nocompetence)
             
+            # puts "#{benevole['nom']}, #{competence} (yes) #{nocompetence} (no): #{ret}"
             if ret==true
                 comp_bene = {}
                 comp_bene['nivol']=benevole['id']
                 comp_bene['prenom']=benevole['prenom']
                 comp_bene['nom']=benevole['nom']
-                competence['list'].push comp_bene             
+                competence_ul['list'].push comp_bene             
             end
                         
         end
-        return competence
+        return competence_ul
     end
     
     def benevoleComplexe(nivol, competence, nocompetence)
         retCompetence = false
         retNoCompetence = true
-        competence = {}
                          
         formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
         
@@ -102,7 +102,7 @@ class Competences
         
         formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
             
-        formations.each do | formation |
+        formations.each do | formation |            
             if formation['formation']['code']==competence
                 if(formation['dateRecyclage'])
                     dateRecyclage = Date.parse formation['dateRecyclage']

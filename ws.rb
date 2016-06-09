@@ -90,6 +90,7 @@ end
 
 get '/benevoles/competences/:competence/yes' do
   begin
+   puts "search competence (yes) #{params['competence']}"
    comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    comp_ret = comp.listStructureWithCompetence(params['competence'], params['ul'])
    status 200
@@ -102,6 +103,7 @@ end
 
 get '/benevoles/competences/:competence/no' do
   begin
+    puts "search competence (no) #{params['competence']}"
    comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'])
    status 200
@@ -121,7 +123,7 @@ get '/benevoles/competences/:nocompetence/no/:competence/yes' do
    status 401
   end
    
-  "#{emails_ret.to_json}"
+  "#{comp_ret.to_json}"
 end
 
 get '/benevoles/nominations/:nivol' do
