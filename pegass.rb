@@ -60,10 +60,7 @@ class Pegass
     end
     
     def f5connect(token, last, session)  
-        puts token
-        puts last
-        puts session
-              
+            
         cookie_f5 = Mechanize::Cookie.new("F5_ST", token)
         cookie_f5.domain = "pegass.croix-rouge.fr"
         cookie_f5.path = "/"
@@ -84,8 +81,20 @@ class Pegass
         cookie_session.secure = true
         cookie_session.origin = "https://pegass.croix-rouge.fr/my.policy"
         @agent.cookie_jar.add(cookie_session)          
-         
-        return true
+        
+        result = {}
+        boolConnect = true
+        begin
+          result = callUrl('/crf/rest/gestiondesdroits')
+          result['LastMRH_Session']=last
+          result['MRHSession']=session
+          result['F5_ST']=token
+          result['state']=boolConnect
+        rescue => exception
+          boolConnect = false
+        end
+        
+        return result, boolConnect
     end
     
     def displayCookies()

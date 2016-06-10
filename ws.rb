@@ -41,6 +41,19 @@ get '/connect' do
   "#{result.to_json}"
 end
 
+get '/connecttest' do    
+  pegass = Pegass.new
+  result, boolConnect = pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+  
+  if boolConnect
+    status 200
+  else
+    status 401
+  end
+  "#{result.to_json}"
+end
+
+
 get '/benevoles' do
   begin
    pegass = Pegass.new
