@@ -29,15 +29,18 @@ class Emails
         moyenscom = {}
         moyenscom['list']=[]
 
-        list_nivol['list'].each do | benevole |            
-            moyenscom['list'].push benevole(benevole['nivol'])                                    
+        list_nivol['list'].each do | benevole |  
+            if(benevole['nivol'])          
+                moyenscom['list'].push benevole(benevole['nivol'])
+            else
+                moyenscom['list'].push benevole(benevole['id'])
+            end                                    
         end
         return moyenscom
     end
     
     def benevole(nivol)
         moyenscom = pegass.callUrl("/crf/rest/moyencomutilisateur?utilisateur=#{nivol}")
-        puts moyenscom
         
         benevole_com = {}
         

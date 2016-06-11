@@ -21,7 +21,7 @@ options "*" do
   # Needed for AngularJS
   response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
 
-  halt HTTP_STATUS_OK
+  halt 200
 end
 
 get '/' do
@@ -152,10 +152,9 @@ get '/benevoles/nominations/:nivol' do
    "#{nominations.to_json}"
 end
 
-get '/benevoles/emails' do
+post '/benevoles/emails' do
   begin
     listNivol = JSON.parse(request.body.read.to_s)
-    puts listNivol
     emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
     emails_ret = emails.getEmailList(listNivol)
     status 200
