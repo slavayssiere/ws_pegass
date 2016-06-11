@@ -152,13 +152,16 @@ get '/benevoles/nominations/:nivol' do
    "#{nominations.to_json}"
 end
 
-get '/benevoles/emails/:list_nivol' do
-begin
-   emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   emails_ret = emails.getEmailList(params['list_nivol'])
-   status 200
+get '/benevoles/emails' do
+  begin
+    listNivol = JSON.parse(request.body.read.to_s)
+    puts listNivol
+    emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+    emails_ret = emails.getEmailList(listNivol)
+    status 200
   rescue => exception
-   status 401
+    puts exception
+    status 401
   end
    
   "#{emails_ret.to_json}"

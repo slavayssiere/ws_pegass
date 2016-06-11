@@ -37,11 +37,11 @@ class Emails
     
     def benevole(nivol)
         moyenscom = pegass.callUrl("/crf/rest/moyencomutilisateur?utilisateur=#{nivol}")
+        puts moyenscom
         
         benevole_com = {}
         
         moyenscom.each do | com |
-            benevole_com['nivol']=nivol
             if com['moyenComId']=='MAILDOM'
                 benevole_com['email']=com['libelle']                
             end
