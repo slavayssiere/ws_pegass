@@ -91,6 +91,18 @@ get '/benevoles/recyclages/:competence' do
   "#{recyclages.to_json}"
 end
 
+get '/benevoles/recyclagesdd/:competence' do
+  begin
+   recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   recyclages = recyclage.listStructureCompetenceDD(params['competence'], '75')
+   status 200
+  rescue => exception
+   status 401
+  end
+   
+  "#{recyclages.to_json}"
+end
+
 get '/benevoles/com' do
   begin
    email = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
