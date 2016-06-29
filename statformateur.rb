@@ -13,6 +13,8 @@ class StatsFormateur
     def listthisyear(ul)
         ret = []
         retassis = []
+        session_incomplete = []
+        session_annulee = []
         listsession = @pegass.callUrl("/crf/rest/seance?debut=#{Date.today.year}-01-01&fin=#{Date.today.year}-12-31&libelleLike=PSC1&page=0&pageInfo=true&perPage=1000&structure=#{ul}&typeActivite=-2")
         compteur = {}
         compteurassis = {}
@@ -74,6 +76,34 @@ class StatsFormateur
                     rescue => detail
                         puts detail
                     end
+                elsif(inscription_activite['statut'].eql? 'Incomplète')
+                    block = {}
+                    block['date']=inscription_activite['seanceList'][0]['debut']
+                    inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{session['id']}/inscription")
+                    if(!inscription_sessions.nil?)
+                        inscription_sessions.each do |inscription_session|
+                            user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
+                            if(inscription_session['role'].eql? "FORMATEUR")
+                                block['formateur']=user['prenom']+' '+user['nom']
+                            end
+                        end
+                    end
+                    session_incomplete.push block
+                elsif(inscription_activite['statut'].eql? 'Annulée')
+                    block = {}
+                    block['date']=inscription_activite['seanceList'][0]['debut']
+                    inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{session['id']}/inscription")
+                    if(!inscription_sessions.nil?)
+                        inscription_sessions.each do |inscription_session|
+                            user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
+                            if(inscription_session['role'].eql? "FORMATEUR")
+                                block['formateur']=user['prenom']+' '+user['nom']
+                            end
+                        end
+                    end
+                    session_annulee.push block
+                else
+                    puts inscription_activite
                 end
             rescue => detail
                 puts detail
@@ -83,6 +113,8 @@ class StatsFormateur
         stats = {}
         stats['formateurs']=ret
         stats['assistants']=retassis
+        stats['session_incomplete']=session_incomplete
+        stats['session_annulee']=session_annulee
         return stats
     end
     
