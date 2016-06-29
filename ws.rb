@@ -5,6 +5,7 @@ require './pegass.rb'
 require './recyclage.rb'
 require './emails.rb'
 require './competences.rb'
+require './statformateur.rb'
 
 config_file './config.yml'
 
@@ -176,4 +177,11 @@ post '/benevoles/emails' do
   end
    
   "#{emails_ret.to_json}"
+end
+
+get '/stats/formateurs' do
+   stats = StatsFormateur.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   sessions = stats.listthisyear(params['ul'])
+   
+   "#{sessions.to_json}"
 end
