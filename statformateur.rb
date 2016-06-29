@@ -12,8 +12,6 @@ class StatsFormateur
     
     def listthisyear(ul)
         ret = []
-        beginOfYear = Date.parse("#{Date.today.year}-01-01")
-        endOfYear = Date.parse("#{Date.today.year}-01-31")
         listsession = @pegass.callUrl("/crf/rest/seance?debut=#{Date.today.year}-01-01&fin=#{Date.today.year}-12-31&libelleLike=PSC1&page=0&pageInfo=true&perPage=1000&structure=#{ul}&typeActivite=-2")
         compteur = {}
         listsession['list'].each do |session|
@@ -31,7 +29,7 @@ class StatsFormateur
                                         compteur[inscription_session['utilisateur']['id']]=compteur[inscription_session['utilisateur']['id']]+1
                                         i=0
                                         ret.each do |formateur|
-                                            if(formateur[:nivol].eql? inscription_session['utilisateur']['id'])
+                                            if(formateur[:id].eql? inscription_session['utilisateur']['id'])
                                                 ret[i][:nombre]=compteur[inscription_session['utilisateur']['id']]
                                                 break
                                             end
@@ -40,7 +38,7 @@ class StatsFormateur
                                     else
                                         compteur[inscription_session['utilisateur']['id']]=1 
                                         block = {
-                                            :nivol => inscription_session['utilisateur']['id'],
+                                            :id => inscription_session['utilisateur']['id'],
                                             :nombre => compteur[inscription_session['utilisateur']['id']],
                                             :prenom => user['prenom'],
                                             :nom => user['nom']
