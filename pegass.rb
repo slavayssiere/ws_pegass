@@ -85,6 +85,9 @@ class Pegass
         result = {}
         boolConnect = true
         begin
+            # /crf/rest/mazonegeo
+            # /crf/rest/acl/config
+            # /crf/rest/structure/mastructureaffichee
           result = callUrl('/crf/rest/gestiondesdroits')
           result['LastMRH_Session']=last
           result['MRHSession']=session

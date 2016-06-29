@@ -80,10 +80,10 @@ get '/benevoles/recyclages' do
   "#{recyclages.to_json}"
 end
 
-get '/benevoles/recyclages/:competence' do
+get '/benevoles/recyclages/:competence/:competencecode' do
   begin
    recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   recyclages = recyclage.listStructureCompetence(params['competence'], params['ul'])
+   recyclages = recyclage.listStructureCompetence(params['competence'], params['competencecode'], params['ul'])
    status 200
   rescue => exception
    status 401
@@ -92,10 +92,10 @@ get '/benevoles/recyclages/:competence' do
   "#{recyclages.to_json}"
 end
 
-get '/benevoles/recyclagesdd/:competence' do
+get '/benevoles/recyclagesdd/:competence/:competencecode' do
   begin
    recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   recyclages = recyclage.listStructureCompetenceDD(params['competence'], '75')
+   recyclages = recyclage.listStructureCompetenceDD(params['competence'], params['competencecode'], '75')
    status 200
   rescue => exception
    status 401
@@ -178,6 +178,14 @@ post '/benevoles/emails' do
    
   "#{emails_ret.to_json}"
 end
+
+get '/competences' do
+   comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   comp_ret = comp.getCompetences()
+   
+   "#{comp_ret.to_json}"
+end
+
 
 get '/stats/formateurs' do
    stats = StatsFormateur.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])

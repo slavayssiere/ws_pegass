@@ -136,4 +136,21 @@ class Competences
         
         return ret
     end
+    
+    def getCompetences()
+       ret = {}
+       ret['list']=[]
+       comps = @pegass.callUrl("/crf/rest/roles")
+       comps.each do |comp|
+           if(comp['type'].eql? "COMP" or comp['type'].eql? "FORM")
+               block = {}
+               block['id']=comp['id']
+               block['libelle']=comp['libelle']
+               puts comp['libelle']
+               ret['list'].push block
+           end
+       end
+       
+       return ret
+    end
 end

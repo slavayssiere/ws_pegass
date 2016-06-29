@@ -87,8 +87,8 @@ class Recyclage
         return bARecycler, outOfdate, dateRecyclage
     end
     
-    def listStructureCompetence(competence, ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    def listStructureCompetence(competence, competencecode, ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&formation='+competence+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         unite = {}
         unite['list']=[]
@@ -98,7 +98,7 @@ class Recyclage
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
             data_bene={}
-            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competence)
+            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competencecode)
             
             if(bARecycler)
                 # puts "#{benevole['nom']}"
@@ -117,9 +117,9 @@ class Recyclage
         return unite
     end
     
-    def listStructureCompetenceDD(competence, dd)
+    def listStructureCompetenceDD(competence, competencecode, dd)
         # benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page=0&pageInfo=true&perPage=11000&zoneGeoId='+dd+'&zoneGeoType=departement')
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page=0&pageInfo=true&perPage=11000&zoneGeoId='+dd+'&zoneGeoType=departement&formation='+competence)
         
         unite = {}
         unite['list']=[]
@@ -129,7 +129,7 @@ class Recyclage
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
             data_bene={}
-            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competence)
+            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competencecode)
             
             if(bARecycler)
                 # puts "#{benevole['nom']}"
