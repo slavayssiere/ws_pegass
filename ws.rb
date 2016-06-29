@@ -187,7 +187,7 @@ get '/competences' do
 end
 
 
-get '/stats/formateurs' do
+get '/stats/formations' do
    stats = StatsFormateur.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    sessions = stats.listthisyear(params['ul'])
    

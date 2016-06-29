@@ -12,8 +12,10 @@ class StatsFormateur
     
     def listthisyear(ul)
         ret = []
+        retassis = []
         listsession = @pegass.callUrl("/crf/rest/seance?debut=#{Date.today.year}-01-01&fin=#{Date.today.year}-12-31&libelleLike=PSC1&page=0&pageInfo=true&perPage=1000&structure=#{ul}&typeActivite=-2")
         compteur = {}
+        compteurassis = {}
         listsession['list'].each do |session|
             begin           
                 inscription_activite = @pegass.callUrl("/crf/rest/activite/#{session['activite']['id']}")                
@@ -22,11 +24,10 @@ class StatsFormateur
                         inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{session['id']}/inscription")
                         if(!inscription_sessions.nil?)
                             inscription_sessions.each do |inscription_session|
+                                user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
                                 if(inscription_session['role'].eql? "FORMATEUR")
-                                    user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
-                                    puts "Session: #{user['prenom']} #{user['nom']}"
                                     if(!compteur[inscription_session['utilisateur']['id']].nil?)
-                                        compteur[inscription_session['utilisateur']['id']]=compteur[inscription_session['utilisateur']['id']]+1
+                                        compteur[inscription_session['utilisateur']['id']]=compteur[inscription_session['utilisateur']['id']]+1   
                                         i=0
                                         ret.each do |formateur|
                                             if(formateur[:id].eql? inscription_session['utilisateur']['id'])
@@ -42,9 +43,31 @@ class StatsFormateur
                                             :nombre => compteur[inscription_session['utilisateur']['id']],
                                             :prenom => user['prenom'],
                                             :nom => user['nom']
-                                        }   
+                                        }                                 
                                         ret.push block
-                                    end                                    
+                                    end
+                                elsif(inscription_session['role'].eql? "ASSISTANT")
+                                    if(!compteurassis[inscription_session['utilisateur']['id']].nil?)
+                                        compteurassis[inscription_session['utilisateur']['id']]=compteurassis[inscription_session['utilisateur']['id']]+1                                    
+                                        
+                                        i=0
+                                        retassis.each do |formateur|
+                                            if(formateur[:id].eql? inscription_session['utilisateur']['id'])
+                                                retassis[i][:nombre]=compteurassis[inscription_session['utilisateur']['id']]
+                                                break
+                                            end
+                                            i=i+1
+                                        end
+                                    else
+                                        compteurassis[inscription_session['utilisateur']['id']]=1 
+                                        block = {
+                                            :id => inscription_session['utilisateur']['id'],
+                                            :nombre => compteurassis[inscription_session['utilisateur']['id']],
+                                            :prenom => user['prenom'],
+                                            :nom => user['nom']
+                                        }
+                                        retassis.push block
+                                    end
                                 end
                             end
                         end
@@ -57,8 +80,10 @@ class StatsFormateur
             end
         end
         
-        puts ret
-        return ret
+        stats = {}
+        stats['formateurs']=ret
+        stats['assistants']=retassis
+        return stats
     end
     
     def getEmailList(list_nivol)        
