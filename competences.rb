@@ -10,8 +10,8 @@ class Competences
         result, boolConnect = @pegass.f5connect(token, last, session)
     end    
     
-    def listStructureWithCompetence(competence, ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    def listStructureWithCompetence(competence, ul, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&action='+ul+'&page=0&pageInfo=true&perPage=10&structure='+ul)
 
         competence_ul = {}
         competence_ul['list']=[]
@@ -29,11 +29,15 @@ class Competences
             end
                         
         end
+        
+        
+        competence_ul['last_page']=page
+        competence_ul['pages']=benevoles['pages']
         return competence_ul
     end        
     
-    def listStructureWithoutCompetence(competence, ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    def listStructureWithoutCompetence(competence, ul, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&action='+ul+'&page=0&pageInfo=true&perPage=10&structure='+ul)
 
         competence_ul = {}
         competence_ul['list']=[]
@@ -50,11 +54,15 @@ class Competences
             end
                         
         end
+        
+        
+        competence_ul['last_page']=page
+        competence_ul['pages']=benevoles['pages']
         return competence_ul
     end
     
-    def listStructureComplexe(competence, nocompetence, ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    def listStructureComplexe(competence, nocompetence, ul, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&action='+ul+'&page=0&pageInfo=true&perPage=10&structure='+ul)
 
         competence_ul = {}
         competence_ul['list']=[]
@@ -73,6 +81,10 @@ class Competences
             end
                         
         end
+        
+        
+        competence_ul['last_page']=page
+        competence_ul['pages']=benevoles['pages']
         return competence_ul
     end
     

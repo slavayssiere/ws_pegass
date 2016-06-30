@@ -83,7 +83,7 @@ end
 get '/benevoles/recyclages/:competence/:competencecode' do
   begin
    recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   recyclages = recyclage.listStructureCompetence(params['competence'], params['competencecode'], params['ul'])
+   recyclages = recyclage.listStructureCompetence(params['competence'], params['competencecode'], params['ul'], params['page'])
    status 200
   rescue => exception
    status 401
@@ -95,7 +95,7 @@ end
 get '/benevoles/recyclagesdd/:competence/:competencecode' do
   begin
    recyclage = Recyclage.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   recyclages = recyclage.listStructureCompetenceDD(params['competence'], params['competencecode'], '75')
+   recyclages = recyclage.listStructureCompetenceDD(params['competence'], params['competencecode'], '75', params['page'])
    status 200
   rescue => exception
    status 401
@@ -120,10 +120,11 @@ get '/benevoles/competences/:competence/yes' do
   begin
    puts "search competence (yes) #{params['competence']}"
    comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   comp_ret = comp.listStructureWithCompetence(params['competence'], params['ul'])
+   comp_ret = comp.listStructureWithCompetence(params['competence'], params['ul'], params['page'])
    status 200
   rescue => exception
-   status 401
+   puts exception
+   status 500
   end
   
   "#{comp_ret.to_json}"
@@ -133,10 +134,11 @@ get '/benevoles/competences/:competence/no' do
   begin
     puts "search competence (no) #{params['competence']}"
    comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'])
+   comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'], params['page'])
    status 200
   rescue => exception
-   status 401
+   puts exception
+   status 500
   end
    
   "#{comp_ret.to_json}"
@@ -145,10 +147,11 @@ end
 get '/benevoles/competences/:nocompetence/no/:competence/yes' do
   begin
    comp = Competences.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   comp_ret = comp.listStructureComplexe(params['competence'], params['nocompetence'], params['ul'])    
+   comp_ret = comp.listStructureComplexe(params['competence'], params['nocompetence'], params['ul'], params['page'])    
    status 200
   rescue => exception
-   status 401
+   puts exception
+   status 500
   end
    
   "#{comp_ret.to_json}"

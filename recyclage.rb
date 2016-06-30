@@ -87,8 +87,8 @@ class Recyclage
         return bARecycler, outOfdate, dateRecyclage
     end
     
-    def listStructureCompetence(competence, competencecode, ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&formation='+competence+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    def listStructureCompetence(competence, competencecode, ul, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&action='+ul+'&formation='+competence+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         unite = {}
         unite['list']=[]
@@ -114,12 +114,16 @@ class Recyclage
                 end 
             end 
         end
+        
+        
+        unite['last_page']=page
+        unite['pages']=benevoles['pages']
         return unite
     end
     
-    def listStructureCompetenceDD(competence, competencecode, dd)
+    def listStructureCompetenceDD(competence, competencecode, dd, page)
         # benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page=0&pageInfo=true&perPage=11000&zoneGeoId='+dd+'&zoneGeoType=departement&formation='+competence)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=11&zoneGeoId='+dd+'&zoneGeoType=departement&formation='+competence)
         
         unite = {}
         unite['list']=[]
@@ -145,6 +149,9 @@ class Recyclage
                 end 
             end 
         end
+        
+        unite['last_page']=page
+        unite['pages']=benevoles['pages']
         return unite
     end
 
