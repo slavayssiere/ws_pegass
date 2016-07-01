@@ -62,10 +62,23 @@ get '/benevoles' do
    benevoles = pegass.callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=600&structure='+params['ul'])
    status 200
   rescue => exception
-   status 401
+   status 500
   end
 
    "#{benevoles.to_json}"
+end
+
+get '/benevoles/all' do
+  begin
+    emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+    emails_ret = emails.getDataList(params['ul'], params['page'])
+    status 200
+  rescue => exception
+    puts exception
+    status 500
+  end
+   
+  "#{emails_ret.to_json}"
 end
 
 get '/benevoles/recyclages' do

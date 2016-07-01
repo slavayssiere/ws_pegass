@@ -38,7 +38,7 @@ class Emails
         end
         return moyenscom
     end
-    
+
     def benevole(nivol)
         moyenscom = pegass.callUrl("/crf/rest/moyencomutilisateur?utilisateur=#{nivol}")
         
@@ -55,5 +55,38 @@ class Emails
         
         return benevole_com
     end
+
     
+    def getDataList(ul, page)
+        
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page='+page+'&pageInfo=true&perPage=10&structure='+ul)
+        
+        data = {}
+        data['list']=[]
+
+        benevoles['list'].each do | benevole |  
+            data['list'].push benevole_data(benevole)                                   
+        end
+        
+        
+        data['last_page']=page
+        data['pages']=benevoles['pages']
+        return data
+    end
+    
+    def benevole_data(benevole)
+        ben = pegass.callUrl("/crf/rest/infoutilisateur/#{benevole['id']}")
+        
+        benevole_data = {}
+        
+        benevole_data['id']=benevole['id']
+        benevole_data['allow_external']=ben['inscriptionsExternes']                
+        benevole_data['allow_email']=ben['contactParMail']
+        benevole_data['prenom']=benevole['prenom']
+        benevole_data['nom']=benevole['nom']
+        benevole_data['date_naissance']=ben['dateNaissance']
+            
+        
+        return benevole_data
+    end    
 end
