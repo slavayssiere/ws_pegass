@@ -85,8 +85,15 @@ class Emails
         benevole_data['prenom']=benevole['prenom']
         benevole_data['nom']=benevole['nom']
         benevole_data['date_naissance']=ben['dateNaissance']
-            
+        benevole_data['mailMoyenComId']=ben['mailMoyenComId']
         
         return benevole_data
-    end    
+    end   
+    
+    def changeinfo(benevol, nivol)
+        # {"id":"00001376977M","allow_external":true,"allow_email":true,"prenom":"Sebastien","nom":"LAVAYSSIERE","date_naissance":"1986-03-06T00:00:00","mailMoyenComId":"00001376977M_MAILDOM_2"}
+        
+        # { "inscriptionsExternes":false,"contactParMail":true,"mailMoyenComId":"00001376977M_MAILDOM_2"}
+        return pegass.putUrl("/crf/rest/infoutilisateur/#{nivol}", benevol)
+    end 
 end

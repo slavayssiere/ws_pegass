@@ -18,6 +18,7 @@ end
 
 options "*" do
   response.headers["Allow"] = "HEAD,GET,PUT,DELETE,OPTIONS"
+  response.headers['Access-Control-Allow-Methods'] = "HEAD,GET,PUT,DELETE,OPTIONS"
 
   # Needed for AngularJS
   response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
@@ -208,4 +209,15 @@ get '/stats/formations' do
    sessions = stats.listthisyear(params['ul'])
    
    "#{sessions.to_json}"
+end
+
+put '/benevoles/changeinfo/:nivol' do
+  begin
+    benevol = JSON.parse(request.body.read.to_s)
+    emails = Emails.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+    status emails.changeinfo(benevol, params['nivol'])
+  rescue => exception
+    puts exception
+    status 401
+  end
 end

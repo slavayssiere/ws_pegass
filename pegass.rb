@@ -5,7 +5,13 @@ require 'json'
 class Pegass
     
     attr_accessor :url 
-    attr_accessor :agent 
+    attr_accessor :agent
+    
+    attr_accessor :f5
+    attr_accessor :last
+    attr_accessor :session
+     
+    
     
     def initialize()
         @url = 'https://pegass.croix-rouge.fr'
@@ -42,24 +48,30 @@ class Pegass
             if site.to_s.include? 'F5_ST'  
                 result = callUrl('/crf/rest/gestiondesdroits') 
                 result['F5_ST']=site.to_s.split('=')[1]
+                @f5=result['F5_ST']
                 boolConnect = true            
             end    
             if site.to_s.include? 'LastMRH_Session'  
-                last=site.to_s.split('=')[1]            
+                @last=site.to_s.split('=')[1]            
             end  
             if site.to_s.include? 'MRHSession'  
-                session=site.to_s.split('=')[1]
+                @session=site.to_s.split('=')[1]
             end          
         end        
         
-        result['LastMRH_Session']=last
-        result['MRHSession']=session
+        result['LastMRH_Session']=@last
+        result['MRHSession']=@session
         result['state']=boolConnect
+        result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
          
         return result, boolConnect
     end
     
     def f5connect(token, last, session)  
+        
+        @f5=token
+        @last=last
+        @session=session
             
         cookie_f5 = Mechanize::Cookie.new("F5_ST", token)
         cookie_f5.domain = "pegass.croix-rouge.fr"
@@ -93,6 +105,7 @@ class Pegass
           result['MRHSession']=session
           result['F5_ST']=token
           result['state']=boolConnect
+          result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
         rescue => exception
           boolConnect = false
         end
@@ -110,8 +123,15 @@ class Pegass
     
     def callUrl(path)
         # puts "Get " + path
-        url_path = @url + path
+        url_path = @url + path        
         page = @agent.get url_path
         return JSON.parse(page.body)
+    end
+    
+    def putUrl(path, data)
+        url_path = @url + path             
+        page = @agent.put url_path, data.to_json, {'Content-Type' => 'application/json'}
+        puts page.inspect
+        return page.code
     end
 end
