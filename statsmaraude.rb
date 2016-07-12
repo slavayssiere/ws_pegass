@@ -26,6 +26,7 @@ class StatsMaraude
                     nb_maraude = nb_maraude + 1
                     begin
                         inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{session['id']}/inscription")
+                        puts inscription_sessions
                         if(!inscription_sessions.nil?)
                             inscription_sessions.each do |inscription_session|
                                 user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
@@ -50,7 +51,7 @@ class StatsMaraude
                                         }                                 
                                         ret.push block
                                     end
-                                elsif(inscription_session['role'].eql? "15")
+                                elsif(inscription_session['role'].eql? "15" or inscription_session['role'].eql? "PARTICIPANT")
                                     if(!compteurassis[inscription_session['utilisateur']['id']].nil?)
                                         compteurassis[inscription_session['utilisateur']['id']]=compteurassis[inscription_session['utilisateur']['id']]+1                                    
                                         

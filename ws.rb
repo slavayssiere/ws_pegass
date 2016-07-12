@@ -7,6 +7,7 @@ require './emails.rb'
 require './competences.rb'
 require './statformateur.rb'
 require './statsmaraude.rb'
+require './statfc.rb'
 
 config_file './config.yml'
 
@@ -207,14 +208,21 @@ end
 
 get '/stats/formations' do
    stats = StatsFormateur.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   sessions = stats.listthisyear(params['ul'], Date.today.year)
+   sessions = stats.listthisyear(params['ul'], params['year'])
    
    "#{sessions.to_json}"
 end
 
 get '/stats/maraude' do
    stats = StatsMaraude.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-   sessions = stats.listthisyear(params['ul'], Date.today.year)
+   sessions = stats.listthisyear(params['ul'], params['year'])
+   
+   "#{sessions.to_json}"
+end
+
+get '/stats/fc' do
+   stats = StatsFc.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   sessions = stats.listthisyear(params['ul'], params['year'])
    
    "#{sessions.to_json}"
 end
