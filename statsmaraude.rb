@@ -16,7 +16,7 @@ class StatsMaraude
         session_incomplete = []
         session_annulee = []
         nb_maraude = 0
-        listsession = @pegass.callUrl("/crf/rest/seance?categorie=AS&debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=Maraude&page=0&pageInfo=true&perPage=1000&structure=#{ul}")
+        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=Maraude&page=0&pageInfo=true&perPage=1000&structure=#{ul}")
         compteur = {}
         compteurassis = {}
         listsession['list'].each do |session|
