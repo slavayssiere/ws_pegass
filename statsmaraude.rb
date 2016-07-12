@@ -16,17 +16,18 @@ class StatsMaraude
         session_incomplete = []
         session_annulee = []
         nb_maraude = 0
-        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=Maraude&page=0&pageInfo=true&perPage=1000&structure=#{ul}")
+        
+        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=Maraude&page=0&pageInfo=true&perPage=2147483647&structure=#{ul}")                                       
         compteur = {}
         compteurassis = {}
         listsession['list'].each do |session|
             begin           
                 inscription_activite = @pegass.callUrl("/crf/rest/activite/#{session['activite']['id']}")                
-                if(inscription_activite['statut'].eql? 'Complète')
-                    nb_maraude = nb_maraude + 1
-                    begin
+                puts "#{nb_maraude}: #{inscription_activite['statut']}"
+                if(inscription_activite['statut'].eql? 'Complète' or inscription_activite['statut'].eql? 'Incomplète')
+                    begin                    
+                        nb_maraude = nb_maraude + 1
                         inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{session['id']}/inscription")
-                        puts inscription_sessions
                         if(!inscription_sessions.nil?)
                             inscription_sessions.each do |inscription_session|
                                 user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
@@ -88,6 +89,7 @@ class StatsMaraude
                     block['date']=inscription_activite['seanceList'][0]['debut']
                     session_annulee.push block
                 else
+                    puts "error"
                     puts inscription_activite
                 end
             rescue => detail

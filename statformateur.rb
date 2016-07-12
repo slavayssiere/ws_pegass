@@ -15,7 +15,7 @@ class StatsFormateur
         retassis = []
         session_incomplete = []
         session_annulee = []
-        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=PSC1&page=0&pageInfo=true&perPage=1000&structure=#{ul}&typeActivite=-2")
+        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=PSC1&page=0&pageInfo=true&perPage=2147483647&structure=#{ul}")
         compteur = {}
         compteurassis = {}
         listsession['list'].each do |session|

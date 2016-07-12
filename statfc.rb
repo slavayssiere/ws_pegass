@@ -14,10 +14,10 @@ class StatsFc
         ret = []
         retassis = []
         nb_session = 0
-        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=Formation+continue&page=0&pageInfo=true&perPage=1000&structure=#{ul}")
-        temp = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=FC&page=0&pageInfo=true&perPage=1000&structure=#{ul}")
+        listsession = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=Formation+continue&page=0&pageInfo=true&perPage=2147483647&structure=#{ul}")
+        temp = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=FC&page=0&pageInfo=true&perPage=2147483647&structure=#{ul}")
         listsession['list'] = listsession['list'] + temp['list']
-        temp = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=r%C3%A9visions&page=0&pageInfo=true&perPage=1000&structure=#{ul}")
+        temp = @pegass.callUrl("/crf/rest/seance?debut=#{year}-01-01&fin=#{year}-12-31&libelleLike=r%C3%A9visions&page=0&pageInfo=true&perPage=2147483647&structure=#{ul}")
         listsession['list'] = listsession['list'] + temp['list']
         compteur = {}
         compteurassis = {}
