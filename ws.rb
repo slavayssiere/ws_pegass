@@ -7,6 +7,8 @@ require './emails.rb'
 require './competences.rb'
 require './statformateur.rb'
 require './statsmaraude.rb'
+require './statreseau.rb'
+require './statml.rb'
 require './statfc.rb'
 
 config_file './config.yml'
@@ -222,6 +224,20 @@ end
 
 get '/stats/fc' do
    stats = StatsFc.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   sessions = stats.listthisyear(params['ul'], params['year'])
+   
+   "#{sessions.to_json}"
+end
+
+get '/stats/reseau' do
+   stats = StatsReseau.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+   sessions = stats.listthisyear(params['ul'], params['year'])
+   
+   "#{sessions.to_json}"
+end
+
+get '/stats/ml' do
+   stats = StatsMl.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
    sessions = stats.listthisyear(params['ul'], params['year'])
    
    "#{sessions.to_json}"
