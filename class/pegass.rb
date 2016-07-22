@@ -11,8 +11,6 @@ class Pegass
     attr_accessor :last
     attr_accessor :session
      
-    
-    
     def initialize()
         @url = 'https://pegass.croix-rouge.fr'
         @agent = Mechanize.new 

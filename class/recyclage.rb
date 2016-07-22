@@ -1,7 +1,7 @@
-require './pegass.rb'
+require_relative './pegass'
 require 'json'
 
-class Recyclage
+class RecyclagesClass
 
     attr_accessor :pegass
     

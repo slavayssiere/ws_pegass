@@ -1,7 +1,7 @@
-require './pegass.rb'
+require_relative './pegass'
 require 'json'
 
-class Competences
+class CompetencesClass
 
     attr_accessor :pegass
     

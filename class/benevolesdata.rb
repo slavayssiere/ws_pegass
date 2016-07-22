@@ -1,7 +1,8 @@
-require './pegass.rb'
 require 'json'
+require_relative './pegass'
 
-class Emails
+
+class BenevolesData
 
     attr_accessor :pegass
     
@@ -55,7 +56,6 @@ class Emails
         
         return benevole_com
     end
-
     
     def getDataList(ul, page)
         

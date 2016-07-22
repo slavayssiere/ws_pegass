@@ -1,4 +1,4 @@
-require './pegass.rb'
+require_relative './pegass'
 require 'json'
 
 class StatsReseau

@@ -1,2 +1,3 @@
 require './ws'
-run Sinatra::Application
+
+run PegassApp
