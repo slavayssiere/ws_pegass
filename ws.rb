@@ -7,6 +7,7 @@ require './modules/competences'
 require './modules/connexion'
 require './modules/recyclage'
 require './modules/stats'
+require './modules/version'
 
 
 class PegassApp < Sinatra::Base
@@ -17,6 +18,7 @@ class PegassApp < Sinatra::Base
   register Sinatra::PegassApp::Competences
   register Sinatra::PegassApp::Recyclages
   register Sinatra::PegassApp::Stats
+  register Sinatra::PegassApp::Version
 
   configure do
       enable :cross_origin

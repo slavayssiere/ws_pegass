@@ -1,3 +1,3 @@
 require './ws'
 
-run PegassApp
+map('/v1') { run PegassApp }
