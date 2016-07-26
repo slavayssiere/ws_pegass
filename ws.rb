@@ -32,7 +32,7 @@ class PegassApp < Sinatra::Base
     response.headers['Access-Control-Allow-Methods'] = "HEAD,GET,PUT,DELETE,OPTIONS"
 
     # Needed for AngularJS
-    response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept"
+    response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization"
 
     halt 200
   end
