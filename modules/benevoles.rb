@@ -45,7 +45,6 @@ module Sinatra
                 "#{bens_ret.to_json}"
             end
 
-
             app.get '/benevoles/nominations/:nivol' do
                 pegass = Pegass.new
                 pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])

@@ -6,6 +6,15 @@ module Sinatra
     module Version
         def self.registered(app)
 
+            app.get '/' do
+                result = { 
+                    :name => "ws_pegass",
+                    :author => "sebastien.lavayssiere@gmail.com"
+                }
+                
+                "#{result.to_json}"
+            end
+
             app.get '/version' do
                 result = { 
                     :version => "1.0.0" 
