@@ -61,6 +61,9 @@ class Pegass
         result['MRHSession']=@session
         result['state']=boolConnect
         result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
+        isInTeamFormat, role = getUserInfo(result['utilisateur']['id'])
+        result['isInTeamFormat']=isInTeamFormat
+        result['role']=role
          
         return result, boolConnect
     end
@@ -95,20 +98,50 @@ class Pegass
         result = {}
         boolConnect = true
         begin
-            # /crf/rest/mazonegeo
-            # /crf/rest/acl/config
-            # /crf/rest/structure/mastructureaffichee
           result = callUrl('/crf/rest/gestiondesdroits')
           result['LastMRH_Session']=last
           result['MRHSession']=session
           result['F5_ST']=token
           result['state']=boolConnect
           result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
+          isInTeamFormat, role = getUserInfo(result['utilisateur']['id'])
+          result['isInTeamFormat']=isInTeamFormat
+          result['role']=role
         rescue => exception
           boolConnect = false
         end
         
         return result, boolConnect
+    end
+
+    def getUserInfo(nivol)
+        listTeamFormat = ['00001376977M', '00001669247X', '00001727030F', '00001701729E', '00001641554W', '00000599352T', '01000000106B']
+        isInTeamFormat = false;
+        if listTeamFormat.any? { |s| s.include?(nivol) }
+            isInTeamFormat = true;
+        end
+
+        puts "In team format ?: #{isInTeamFormat}"
+
+        role = "user"
+        if nivol.eql? '00001376977M'
+            role = "admin"
+        elsif nivol.eql? '00000040109X'
+            role = "ddaf"        
+        else
+            nominations = callUrl("/crf/rest/nominationutilisateur?utilisateur=#{params['nivol']}")
+            nominations.each do |nomination|
+                if nomination.libelleCourt.eql? "DLUS.A.FOR"
+                    role = "dlaf"
+                elsif nomination.libelleCourt.eql? "DLUS"
+                    role = "dlus"
+                end
+            end
+        end
+        
+        puts "Role ?: #{role}"
+
+        return isInTeamFormat, role
     end
     
     def displayCookies()
