@@ -4,6 +4,7 @@ require 'sinatra/cross_origin'
 require './class/pegass'
 require './modules/benevoles'
 require './modules/competences'
+require './modules/roles'
 require './modules/connexion'
 require './modules/recyclage'
 require './modules/stats'
@@ -16,6 +17,7 @@ class PegassApp < Sinatra::Base
   register Sinatra::PegassApp::Connexion
   register Sinatra::PegassApp::Benevoles
   register Sinatra::PegassApp::Competences
+  register Sinatra::PegassApp::Roles
   register Sinatra::PegassApp::Recyclages
   register Sinatra::PegassApp::Stats
   register Sinatra::PegassApp::Version
