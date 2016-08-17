@@ -60,11 +60,14 @@ class Pegass
         result['LastMRH_Session']=@last
         result['MRHSession']=@session
         result['state']=boolConnect
-        result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
-        isInTeamFormat, role = getUserInfo(result['utilisateur']['id'])
-        result['isInTeamFormat']=isInTeamFormat
-        result['role']=role
-         
+        begin
+            result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
+            isInTeamFormat, role = getUserInfo(result['utilisateur']['id'])
+            result['isInTeamFormat']=isInTeamFormat
+            result['role']=role
+        rescue => exception
+            puts exception
+        end 
         return result, boolConnect
     end
     
