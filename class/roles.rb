@@ -15,17 +15,17 @@ class RolesClass
 
         competence_ul = {}
         competence_ul['list']=[]
-        benevoles['list'].each do | benevole |
-            # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
-                    
-            comp_bene = {}
-            comp_bene['nivol']=benevole['id']
-            comp_bene['prenom']=benevole['prenom']
-            comp_bene['nom']=benevole['nom']
-            competence_ul['list'].push comp_bene            
-                        
+        if benevoles['list']
+            benevoles['list'].each do | benevole |
+                # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
+                comp_bene = {}
+                comp_bene['nivol']=benevole['id']
+                comp_bene['prenom']=benevole['prenom']
+                comp_bene['nom']=benevole['nom']
+                competence_ul['list'].push comp_bene            
+                            
+            end
         end
-        
         
         competence_ul['last_page']=page
         competence_ul['pages']=benevoles['pages']
