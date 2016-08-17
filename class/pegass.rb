@@ -42,7 +42,6 @@ class Pegass
         session = ""
         
         agent.cookie_jar.each do |site|
-            puts site
             if site.to_s.include? 'F5_ST'  
                 result = callUrl('/crf/rest/gestiondesdroits') 
                 result['F5_ST']=site.to_s.split('=')[1]
@@ -124,15 +123,13 @@ class Pegass
             isInTeamFormat = true;
         end
 
-        puts "In team format ?: #{isInTeamFormat}"
-
         role = "user"
         if nivol.eql? '00001376977M'
             role = "admin"
         elsif nivol.eql? '00000040109X'
             role = "ddaf"        
         else
-            nominations = callUrl("/crf/rest/nominationutilisateur?utilisateur=#{params['nivol']}")
+            nominations = callUrl("/crf/rest/nominationutilisateur?utilisateur=#{nivol}")
             nominations.each do |nomination|
                 if nomination.libelleCourt.eql? "DLUS.A.FOR"
                     role = "dlaf"
@@ -142,8 +139,6 @@ class Pegass
             end
         end
         
-        puts "Role ?: #{role}"
-
         return isInTeamFormat, role
     end
     
@@ -165,7 +160,6 @@ class Pegass
     def putUrl(path, data)
         url_path = @url + path             
         page = @agent.put url_path, data.to_json, {'Content-Type' => 'application/json'}
-        puts page.inspect
         return page.code
     end
 end

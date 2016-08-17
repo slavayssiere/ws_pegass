@@ -23,7 +23,7 @@ class StatsMaraude
         listsession['list'].each do |session|
             begin           
                 inscription_activite = @pegass.callUrl("/crf/rest/activite/#{session['activite']['id']}")                
-                puts "#{nb_maraude}: #{inscription_activite['statut']}"
+                # puts "#{nb_maraude}: #{inscription_activite['statut']}"
                 if(inscription_activite['statut'].eql? 'Complète' or inscription_activite['statut'].eql? 'Incomplète')
                     begin                    
                         nb_maraude = nb_maraude + 1

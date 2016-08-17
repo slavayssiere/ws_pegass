@@ -158,7 +158,6 @@ class CompetencesClass
                block = {}
                block['id']=comp['id']
                block['libelle']=comp['libelle']
-               puts comp['libelle']
                ret['list'].push block
            end
        end

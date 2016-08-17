@@ -22,7 +22,7 @@ module Sinatra
 
             app.get '/benevoles/competences/:competence/no' do
                 begin
-                    puts "search competence (no) #{params['competence']}"
+                    # puts "search competence (no) #{params['competence']}"
                     comp = CompetencesClass.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
                     comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'], params['page'])
                     status 200
