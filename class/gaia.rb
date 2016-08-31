@@ -1,6 +1,8 @@
 require 'net/http'
 require 'mechanize'
 require 'json'
+require 'nokogiri'
+
 
 class Gaia
     
@@ -12,11 +14,18 @@ class Gaia
     attr_accessor :last
     attr_accessor :session
     attr_accessor :saml
+    attr_accessor :jsessionid
      
     def initialize()
         @url_identification = 'https://id.authentification.croix-rouge.fr' # 'https://id.authentification.croix-rouge.fr'
         @url_gaia = 'https://gaia.croix-rouge.fr'
-        @agent = Mechanize.new 
+        @agent = Mechanize.new { |a|
+            a.post_connect_hooks << lambda { |_,_,response,_|
+                if response.content_type.nil? || response.content_type.empty?
+                response.content_type = 'text/html'
+                end
+            }
+        }
         @agent.user_agent_alias = 'Linux Firefox'
         @agent.redirect_ok = false
         @agent.cookie_jar.clear!
@@ -30,25 +39,22 @@ class Gaia
         
 
         # puts "First call"      
-        puts "Go to #{url_policy}"
+        # puts "Go to #{url_policy}"
         policy_page = @agent.get url_policy
-        while policy_page.code[/30[12]/]
-            puts policy_page.header['location']            
+        while policy_page.code[/30[12]/]         
             #gestion error logout
             if policy_page.header['location'].eql? "/my.logout.php3?errorcode=19"
                 policy_page = agent.get policy_page.header['location'] 
-                puts policy_page.inspect
-                policy_page.links.each do |link|
-                    puts link.inspect 
-                end
+                # policy_page.links.each do |link|
+                #     puts link.inspect 
+                # end
                 policy_page = @agent.get url_root
-                puts policy_page.code
             else
-                policy_page = agent.get policy_page.header['location']                        
+                policy_page = @agent.get policy_page.header['location']                        
             end
         end
 
-        puts "end of first call: #{policy_page.uri}"
+        # puts "end of first call: #{policy_page.uri}"
 
         search_form = policy_page.form_with :name => "e1"
         search_form.field_with(:name => "username").value  = username
@@ -57,86 +63,88 @@ class Gaia
       
         page = @agent.submit search_form
         while page.code[/30[12]/]
-            puts page.header['location']
+            # puts page.header['location']
             page = @agent.get page.header['location']
         end
 
-        puts page.header['location']        
-        puts "end of submit: #{policy_page.uri}"
+        # puts "end of submit: #{policy_page.uri}"
 
-
-        puts "Go to https://gaia.croix-rouge.fr/crf-benevoles/"
+        # puts "Go to https://gaia.croix-rouge.fr/crf-benevoles/"
         page_gaia = @agent.get 'https://gaia.croix-rouge.fr/crf-benevoles/'
-        puts page_gaia.header['location']
         while page_gaia.code[/30[12]/]
-          puts page_gaia.header['location']
+          # puts page_gaia.header['location']
           page_gaia = @agent.get page_gaia.header['location']
         end
 
-        puts "Go to https://gaia.croix-rouge.fr/crf-benevoles/saml2/acs"
-        page_gaia = @agent.get 'https://gaia.croix-rouge.fr/crf-benevoles/saml2/acs'
-        puts page_gaia.header['location']
-        while page_gaia.code[/30[12]/]
-          puts page_gaia.header['location']
-          page_gaia = @agent.get page_gaia.header['location']
-        end
+        # page_parse = Mechanize::Page.new(page_gaia.uri,nil,page_gaia.body)
+
+        # puts page_parse.class
+        # puts page_parse.inspect
+        # puts page_parse.forms.inspect
+
+        search_form = page_gaia.forms.first
+        page_fin = @agent.submit search_form
+
+        # html_doc = Nokogiri::HTML(page_gaia.body)
+        # html_input = html_doc.at_css "input"
+
+        # data = "SAMLResponse="+html_input.attributes["value"]+"&RelayState=http://gaia.croix-rouge.fr/crf-benevoles/"
+        # data_encode=URI.escape(data)
+        # puts data_encode
+
+        # puts "Go to https://gaia.croix-rouge.fr/crf-benevoles/saml2/acs" 
+        # page_fin = @agent.post "https://gaia.croix-rouge.fr/crf-benevoles/saml2/acs", data_encode, {'Content-Type' => 'application/x-www-form-urlencoded'}
+        
+        # puts page_fin.inspect        
+        # displayCookies()
 
         boolConnect = false                  
         result = {}
         last = ""
         session = ""        
-        
-        @agent.cookie_jar.each do |cookie|
-            puts cookie.to_s
-            if cookie.to_s.include? 'F5_ST'
+
+        @agent.cookie_jar.each do |cookie|  
+            if cookie.to_s.include? 'SAML'
                 result = callUrl('/crf-benevoles/users/userSession') 
-                result['F5_ST']=cookie.to_s.split('=')[1]
-                @f5=result['F5_ST']
-                boolConnect = true            
-            end    
-            if cookie.to_s.include? 'LastMRH_Session'  
-                @last=cookie.to_s.split('=')[1]            
-            end  
-            if cookie.to_s.include? 'MRHSession'  
-                @session=cookie.to_s.split('=')[1]
-            end  
+                @saml=cookie.to_s.split('=')[1]   
+                boolConnect = true                    
+            end 
+            if cookie.to_s.include? 'JSESSIONID'  
+                @jsessionid=cookie.to_s.split('=')[1]            
+            end 
         end
 
-        result['LastMRH_Session']=@last
-        result['MRHSession']=@session
+        result['SAML']=@saml
+        result['JSESSIONID']=@jsessionid
         result['state']=boolConnect
         #result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
          
         return result, boolConnect
     end
     
-    def f5connect(token, last, session)  
-        
-        @f5=token
-        @last=last
-        @session=session
+    def SAMLconnect(saml, jsessionid)          
+        @saml=saml
+        @jsessionid=jsessionid
             
-        cookie_f5 = Mechanize::Cookie.new("F5_ST", token)
-        cookie_f5.domain = "authentification.croix-rouge.fr"
-        cookie_f5.path = "/"
-        cookie_f5.secure = true
-        cookie_f5.origin = @url_identification
-        @agent.cookie_jar.add(cookie_f5)      
-        
-        cookie_last = Mechanize::Cookie.new("LastMRH_Session", last)
-        cookie_last.domain = "authentification.croix-rouge.fr"
-        cookie_last.path = "/"
-        cookie_last.secure = true
-        cookie_last.origin = @url_identification
-        @agent.cookie_jar.add(cookie_last)
-        
-        cookie_session = Mechanize::Cookie.new("MRHSession", session)
-        cookie_session.domain = "authentification.croix-rouge.fr"
-        cookie_session.path = "/"
-        cookie_session.secure = true
-        cookie_session.origin = @url_identification
-        @agent.cookie_jar.add(cookie_session)          
-        
+        cookie_saml = Mechanize::Cookie.new("SAML", saml)
+        cookie_saml.domain = "gaia.croix-rouge.fr"
+        cookie_saml.path = "/crf-benevoles"
+        cookie_saml.secure = true
+        cookie_saml.origin = "https://gaia.croix-rouge.fr/my.policy"
+        @agent.cookie_jar.add(cookie_saml)  
+
+        cookie_jsessionid = Mechanize::Cookie.new("JSESSIONID", jsessionid)
+        cookie_jsessionid.domain = "gaia.croix-rouge.fr"
+        cookie_jsessionid.path = "/crf-benevoles/"
+        cookie_jsessionid.origin = "https://gaia.croix-rouge.fr/my.policy"
+        @agent.cookie_jar.add(cookie_jsessionid)  
+
+        cookie_lang = Mechanize::Cookie.new("i18next", "fr-FR")
+        cookie_lang.domain = "gaia.croix-rouge.fr"
+        cookie_lang.path = "/"
+        cookie_lang.origin = "https://gaia.croix-rouge.fr/my.policy"
+        @agent.cookie_jar.add(cookie_lang) 
+
         result = {}
         boolConnect = true
         begin
@@ -144,9 +152,8 @@ class Gaia
             # /crf/rest/acl/config
             # /crf/rest/structure/mastructureaffichee
           result = callUrl('/crf-benevoles/users/userSession')
-          result['LastMRH_Session']=last
-          result['MRHSession']=session
-          result['F5_ST']=token
+          result['SAML']=@saml
+          result['JSESSIONID']=@jsessionid
           result['state']=boolConnect
           #result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
         rescue => exception
@@ -168,13 +175,20 @@ class Gaia
         # puts "Get " + path
         url_path = @url_gaia + path        
         page = @agent.get url_path
-        puts page.body
+        # puts page.body        
         return JSON.parse(page.body)
     end
     
     def putUrl(path, data)
         url_path = @url_gaia + path             
         page = @agent.put url_path, data.to_json, {'Content-Type' => 'application/json'}
+        puts page.inspect
+        return page.code
+    end
+
+    def postUrl(path, data)
+        url_path = @url_gaia + path             
+        page = @agent.post url_path, data.to_json, {'Content-Type' => 'application/json'}
         puts page.inspect
         return page.code
     end

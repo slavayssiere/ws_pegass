@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require_relative '../class/pegass'
+require_relative '../class/gaia'
 require_relative '../class/benevolesdata'
 
 module Sinatra
@@ -79,6 +80,19 @@ module Sinatra
                     puts exception
                     status 500
                 end
+            end
+
+            app.get '/benevoles/address/:idgaia' do
+                begin  
+                    gaia = Gaia.new()
+                    connect, testco = gaia.SAMLconnect(params['SAML'], params['JSESSIONID'])              
+                    bens_ret = gaia.callUrl("/crf-benevoles/contact/#{params['idgaia']}/mesInfos")   
+                    status 200
+                rescue => exception
+                    status 500
+                end
+                
+                "#{bens_ret.to_json}"
             end
 
         end
