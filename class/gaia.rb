@@ -1,8 +1,6 @@
 require 'net/http'
 require 'mechanize'
 require 'json'
-require 'nokogiri'
-
 
 class Gaia
     
