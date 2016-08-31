@@ -38,7 +38,9 @@ module Sinatra
 
                 result, boolConnect = pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
                 res_gaia, gaiaConnect = gaia.SAMLconnect(params['SAML'], params['JSESSIONID'])
-                result['gaia'] = res_gaia
+                result['SAML'] = res_gaia['SAML']
+                result['JSESSIONID'] = res_gaia['JSESSIONID']
+                result['utilisateur']['gaia_id']=res_gaia['utiId']
                 
                 if boolConnect
                     status 200
