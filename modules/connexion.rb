@@ -37,7 +37,7 @@ module Sinatra
                 gaia = Gaia.new
 
                 result, boolConnect = pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-                res_gaia, gaiaConnect = gaia.connect(params['SAML'], params['JSESSIONID'])
+                res_gaia, gaiaConnect = gaia.SAMLconnect(params['SAML'], params['JSESSIONID'])
                 result['gaia'] = res_gaia
                 
                 if boolConnect
