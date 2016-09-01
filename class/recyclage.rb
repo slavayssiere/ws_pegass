@@ -5,9 +5,8 @@ class RecyclagesClass
 
     attr_accessor :pegass
     
-    def initialize(token, last, session)
-        @pegass = Pegass.new        
-        result, boolConnect = @pegass.f5connect(token, last, session)
+    def initialize(pegassConnection)
+        @pegass = pegassConnection
     end
     
     def listStructure(ul)
@@ -122,7 +121,7 @@ class RecyclagesClass
     end
     
     def listStructureCompetenceDD(competence, competencecode, dd, page)
-        # benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=11&zoneGeoId='+dd+'&zoneGeoType=departement&formation='+competence)
         
         unite = {}

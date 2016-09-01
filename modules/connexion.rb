@@ -8,17 +8,17 @@ module Sinatra
         def self.registered(app)
 
             app.get '/connect' do
-                begin                        
-                    pegass = Pegass.new
-                    gaia = Gaia.new
+                begin    
 
-                    result, boolConnect = pegass.connect(params['username'], params['password'])
-                    res_gaia, gaiaConnect = gaia.connect(params['username'], params['password'])
-                    result['SAML'] = res_gaia['SAML']
-                    result['JSESSIONID'] = res_gaia['JSESSIONID']
-                    result['utilisateur']['gaia_id']=res_gaia['utiId']
+                    connexion=get_connexion
+                    puts "On connexion: #{connexion.inspect}"
+
+                    result=connexion['res_pegass']
+                    result['SAML'] = connexion['res_gaia']['SAML']
+                    result['JSESSIONID'] = connexion['res_gaia']['JSESSIONID']
+                    result['utilisateur']['gaia_id']=connexion['res_gaia']['utiId']
                      
-                    if boolConnect
+                    if connexion['pegass_connect']
                         status 200
                     else
                         status 401
@@ -32,22 +32,27 @@ module Sinatra
                 "#{result.to_json}"
             end
 
-            app.get '/connecttest' do    
-                pegass = Pegass.new
-                gaia = Gaia.new
+            app.get '/connecttest' do  
+                begin    
 
-                result, boolConnect = pegass.f5connect(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
-                res_gaia, gaiaConnect = gaia.SAMLconnect(params['SAML'], params['JSESSIONID'])
-                result['SAML'] = res_gaia['SAML']
-                result['JSESSIONID'] = res_gaia['JSESSIONID']
-                result['utilisateur']['gaia_id']=res_gaia['utiId']
-                
-                if boolConnect
-                    status 200
-                else
-                    status 401
+                    connexion=get_connexion
+
+                    result=connexion['res_pegass']
+                    result['SAML'] = connexion['res_gaia']['SAML']
+                    result['JSESSIONID'] = connexion['res_gaia']['JSESSIONID']
+                    result['utilisateur']['gaia_id']=connexion['res_gaia']['utiId']
+                     
+                    if connexion['pegass_connect']
+                        status 200
+                    else
+                        status 401
+                    end
+
+                rescue => exception
+                    puts exception
+                    status 500
                 end
-
+                
                 "#{result.to_json}"
             end
         end

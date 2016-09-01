@@ -6,9 +6,8 @@ class BenevolesData
 
     attr_accessor :pegass
     
-    def initialize(token, last, session)
-        @pegass = Pegass.new        
-        result, boolConnect = @pegass.f5connect(token, last, session)
+    def initialize(pegassConnection)
+        @pegass = pegassConnection
     end
     
     def listStructure(ul)

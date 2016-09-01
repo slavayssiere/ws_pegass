@@ -17,7 +17,7 @@ module Sinatra
 
             app.get '/version' do
                 result = { 
-                    :version => "1.2.0" 
+                    :version => "2.0.1" 
                 }
                 
                 "#{result.to_json}"

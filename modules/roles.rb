@@ -9,7 +9,7 @@ module Sinatra
 
             app.get '/benevoles/roles/:role' do
                 begin
-                    role = RolesClass.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                    role = RolesClass.new(get_connexion['pegass'])
                     role_ret = role.listStructureWithRole(params['role'], params['ul'], params['page'])
                     status 200
                 rescue => exception
@@ -22,7 +22,7 @@ module Sinatra
 
             app.get '/benevoles/roles' do
                 begin
-                    role = RolesClass.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                    role = RolesClass.new(get_connexion['pegass'])
                     role_ret = role.getRoles();
                     status 200
                 rescue => exception

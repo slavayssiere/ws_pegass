@@ -12,35 +12,35 @@ module Sinatra
         def self.registered(app)
 
             app.get '/stats/formations' do
-                stats = StatsFormateur.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                stats = StatsFormateur.new(get_connexion['pegass'])
                 sessions = stats.listthisyear(params['ul'], params['year'])
                 
                 "#{sessions.to_json}"
             end
 
             app.get '/stats/maraude' do
-                stats = StatsMaraude.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                stats = StatsMaraude.new(get_connexion['pegass'])
                 sessions = stats.listthisyear(params['ul'], params['year'])
                 
                 "#{sessions.to_json}"
             end
 
             app.get '/stats/fc' do
-                stats = StatsFc.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                stats = StatsFc.new(get_connexion['pegass'])
                 sessions = stats.listthisyear(params['ul'], params['year'])
                 
                 "#{sessions.to_json}"
             end
 
             app.get '/stats/reseau' do
-                stats = StatsReseau.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                stats = StatsReseau.new(get_connexion['pegass'])
                 sessions = stats.listthisyear(params['ul'], params['year'])
                 
                 "#{sessions.to_json}"
             end
 
             app.get '/stats/ml' do
-                stats = StatsMl.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                stats = StatsMl.new(get_connexion['pegass'])
                 sessions = stats.listthisyear(params['ul'], params['year'])
                 
                 "#{sessions.to_json}"
