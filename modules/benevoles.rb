@@ -15,8 +15,6 @@ module Sinatra
                     status 200
                 rescue => exception
                     puts exception
-                    puts connexion['pegass']
-                    puts connexion['pegass'].inspect
                     status 500
                 end
 

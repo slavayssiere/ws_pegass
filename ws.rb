@@ -36,8 +36,6 @@ class PegassApp < Sinatra::Base
       pegass = Pegass.new
       gaia = Gaia.new
 
-      puts request.env
-
       if(request.env['HTTP_F5_ST'])
         res_pegass, pegassConnect = pegass.f5connect(request.env['HTTP_F5_ST'], request.env['HTTP_LASTMRH_SESSION'], request.env['HTTP_MRHSESSION'])
         res_gaia, gaiaConnect = gaia.SAMLconnect(request.env['HTTP_SAML'], request.env['HTTP_JSESSIONID'])

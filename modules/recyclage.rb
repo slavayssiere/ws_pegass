@@ -32,14 +32,14 @@ module Sinatra
             end
 
             app.get '/benevoles/recyclagesdd/:competence/:competencecode' do
-                #begin
+                begin
                     recyclage = RecyclagesClass.new(get_connexion['pegass'])
                     recyclages = recyclage.listStructureCompetenceDD(params['competence'], params['competencecode'], params['dd'], params['page'])
                     status 200
-                # rescue => exception
-                #     puts exception
-                #     status 401
-                # end
+                rescue => exception
+                    puts exception
+                    status 500
+                end
                 
                 "#{recyclages.to_json}"
             end
