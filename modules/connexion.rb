@@ -11,8 +11,7 @@ module Sinatra
                 begin    
 
                     connexion=get_connexion
-                    puts "On connexion: #{connexion.inspect}"
-
+                    
                     result=connexion['res_pegass']
                     result['SAML'] = connexion['res_gaia']['SAML']
                     result['JSESSIONID'] = connexion['res_gaia']['JSESSIONID']
