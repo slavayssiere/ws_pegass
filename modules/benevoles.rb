@@ -10,11 +10,13 @@ module Sinatra
 
             app.get '/benevoles' do
                 begin
-                    connexion = get_connexion
+                    connexion=get_connexion
                     benevoles = connexion['pegass'].callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=200&structure='+params['ul'])
                     status 200
                 rescue => exception
                     puts exception
+                    puts connexion['pegass']
+                    puts connexion['pegass'].inspect
                     status 500
                 end
 
