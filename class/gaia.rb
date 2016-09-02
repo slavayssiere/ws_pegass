@@ -74,26 +74,9 @@ class Gaia
           page_gaia = @agent.get page_gaia.header['location']
         end
 
-        # page_parse = Mechanize::Page.new(page_gaia.uri,nil,page_gaia.body)
-
-        # puts page_parse.class
-        # puts page_parse.inspect
-        # puts page_parse.forms.inspect
-
         search_form = page_gaia.forms.first
         page_fin = @agent.submit search_form
-
-        # html_doc = Nokogiri::HTML(page_gaia.body)
-        # html_input = html_doc.at_css "input"
-
-        # data = "SAMLResponse="+html_input.attributes["value"]+"&RelayState=http://gaia.croix-rouge.fr/crf-benevoles/"
-        # data_encode=URI.escape(data)
-        # puts data_encode
-
-        # puts "Go to https://gaia.croix-rouge.fr/crf-benevoles/saml2/acs" 
-        # page_fin = @agent.post "https://gaia.croix-rouge.fr/crf-benevoles/saml2/acs", data_encode, {'Content-Type' => 'application/x-www-form-urlencoded'}
-        
-        # puts page_fin.inspect        
+  
         # displayCookies()
 
         boolConnect = false                  

@@ -10,9 +10,11 @@ module Sinatra
 
             app.get '/benevoles' do
                 begin
-                    benevoles = get_connexion['pegass'].callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=600&structure='+params['ul'])
+                    connexion = get_connexion
+                    benevoles = connexion['pegass'].callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=200&structure='+params['ul'])
                     status 200
                 rescue => exception
+                    puts exception
                     status 500
                 end
 
@@ -38,6 +40,7 @@ module Sinatra
                     bens_ret = bens.listStructure(params['ul'])   
                     status 200
                 rescue => exception
+                    puts exception
                     status 500
                 end
                 
@@ -80,6 +83,7 @@ module Sinatra
                     bens_ret = get_connexion['gaia'].callUrl("/crf-benevoles/contact/#{params['idgaia']}/mesInfos")   
                     status 200
                 rescue => exception
+                    puts exception
                     status 500
                 end
                 
