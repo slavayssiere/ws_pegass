@@ -70,7 +70,7 @@ module Sinatra
             app.put '/benevoles/changeinfo/:nivol' do
                 begin
                     benevol = JSON.parse(request.body.read.to_s)
-                    emails = BenevolesData.new(params['F5_ST'], params['LastMRH_Session'], params['MRHSession'])
+                    emails = BenevolesData.new(get_connexion['pegass'])
                     status emails.changeinfo(benevol, params['nivol'])
                 rescue => exception
                     puts exception
