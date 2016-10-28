@@ -72,7 +72,8 @@ class Pegass
         end 
         
         
-        puts "tentative de connexion de #{username}, #{boolConnect}"
+        timelog = Time.new
+        puts "#{timelog.inspect} tentative de connexion de #{username}, #{boolConnect}"
         
         return result, boolConnect
     end
