@@ -34,6 +34,8 @@ class Pegass
         search_form.field_with(:name => "password").value  = password
         search_form.field_with(:name => "vhost").value = "standard"
 
+        puts "tentative de connexion de #{username}"
+        
         page = @agent.submit search_form
 
         boolConnect = false                  
@@ -65,8 +67,13 @@ class Pegass
             result['isInTeamFormat']=isInTeamFormat
             result['role']=role
         rescue => exception
-            puts exception
+            time1 = Time.new
+            puts "#{time1.inspect} #{exception}"
         end 
+        
+        
+        puts "tentative de connexion de #{username}, #{boolConnect}"
+        
         return result, boolConnect
     end
     
