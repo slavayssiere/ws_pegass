@@ -127,7 +127,9 @@ class Pegass
         if nivol.eql? '00001376977M'
             role = "admin"
         elsif nivol.eql? '00000040109X'
-            role = "ddaf"        
+            role = "ddaf" 
+        elsif nivol.eql? '00000039302V'
+            role = "ddaf"
         else
             nominations = callUrl("/crf/rest/nominationutilisateur?utilisateur=#{nivol}")
             nominations.each do |nomination|
