@@ -15,7 +15,7 @@ require './modules/version'
 
 class PegassApp < Sinatra::Base
 
-  logger filename: "/var/log/ws_pegass.log", level: :trace
+  logger filename: "ws_pegass.log", level: :trace
   
   register Sinatra::CrossOrigin
   register Sinatra::PegassApp::Connexion
