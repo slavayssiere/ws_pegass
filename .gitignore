@@ -42,3 +42,4 @@ build/
 !.elasticbeanstalk/*.global.yml
 
 test.rb
+*.log
