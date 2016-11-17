@@ -73,7 +73,7 @@ class StatsFormateur
                             end
                         end
                     rescue => detail
-                        logger.error detail
+                        # logger.error detail
                     end
                 elsif(inscription_activite['statut'].eql? 'Incomplète')
                     block = {}
@@ -102,10 +102,10 @@ class StatsFormateur
                     end
                     session_annulee.push block
                 else
-                    logger.info inscription_activite
+                    # logger.info inscription_activite
                 end
             rescue => detail
-                logger.error detail
+                # logger.error detail
             end
         end
         

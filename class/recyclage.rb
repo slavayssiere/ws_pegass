@@ -22,7 +22,7 @@ class RecyclagesClass
             nbRecyclage,recyclage_bene = benevole(benevole['id'])
             
             if(nbRecyclage > 0)
-                # logger.info "#{benevole['nom']}: #{list_formation}"
+                # # logger.info "#{benevole['nom']}: #{list_formation}"
                 data_bene['nivol']=benevole['id']
                 data_bene['nom']=benevole['nom']
                 data_bene['prenom']=benevole['prenom']
@@ -69,7 +69,7 @@ class RecyclagesClass
                     dateRecyclage = Date.parse formation['dateRecyclage']
                     avantRecyclage = endOfYear - dateRecyclage
                     
-                    # logger.info "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
+                    # # logger.info "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
                     
                     if(avantRecyclage >= 0)
                         bARecycler = true
@@ -100,7 +100,7 @@ class RecyclagesClass
             bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competencecode)
             
             if(bARecycler)
-                # logger.info "#{benevole['nom']}"
+                # # logger.info "#{benevole['nom']}"
                 data_bene['nivol']=benevole['id']
                 data_bene['nom']=benevole['nom']
                 data_bene['prenom']=benevole['prenom']
@@ -135,7 +135,7 @@ class RecyclagesClass
             bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competencecode)
             
             if(bARecycler)
-                # logger.info "#{benevole['nom']}"
+                # # logger.info "#{benevole['nom']}"
                 data_bene['nivol']=benevole['id']
                 data_bene['nom']=benevole['nom']
                 data_bene['prenom']=benevole['prenom']

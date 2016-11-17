@@ -14,7 +14,7 @@ module Sinatra
                     benevoles = connexion['pegass'].callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=200&structure='+params['ul'])
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
 
@@ -27,7 +27,7 @@ module Sinatra
                     bens_ret = bens.getDataList(params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
                 
@@ -40,7 +40,7 @@ module Sinatra
                     bens_ret = bens.listStructure(params['ul'])   
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
                 
@@ -60,7 +60,7 @@ module Sinatra
                     bens_ret = bens.getEmailList(listNivol)
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 401
                 end
                 
@@ -73,7 +73,7 @@ module Sinatra
                     emails = BenevolesData.new(get_connexion['pegass'])
                     status emails.changeinfo(benevol, params['nivol'])
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
             end
@@ -83,7 +83,7 @@ module Sinatra
                     bens_ret = get_connexion['gaia'].callUrl("/crf-benevoles/contact/#{params['idgaia']}/mesInfos")   
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
                 

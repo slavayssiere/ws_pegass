@@ -23,10 +23,10 @@ class Pegass
         url_root = @url + path_root
         url_policy = @url + path_policy
         
-        # logger.info "First call"        
+        # # logger.info "First call"        
         policy_page = @agent.get url_root
         
-        # logger.info "Post credential on " + url_policy + " with " + @agent.cookie_jar.inspect
+        # # logger.info "Post credential on " + url_policy + " with " + @agent.cookie_jar.inspect
         policy_page = @agent.get url_policy
 
         search_form = policy_page.form_with :name => "e1"
@@ -34,7 +34,7 @@ class Pegass
         search_form.field_with(:name => "password").value  = password
         search_form.field_with(:name => "vhost").value = "standard"
 
-        logger.info "tentative de connexion de #{username}"
+        # logger.info "tentative de connexion de #{username}"
         
         page = @agent.submit search_form
 
@@ -68,12 +68,12 @@ class Pegass
             result['role']=role
         rescue => exception
             time1 = Time.new
-            logger.error "#{time1.inspect} #{exception}"
+            puts "#{time1.inspect} #{exception}"
         end 
         
         
         timelog = Time.new
-        logger.info "#{timelog.inspect} tentative de connexion de #{username}, #{boolConnect}"
+        puts "#{timelog.inspect} tentative de connexion de #{username}, #{boolConnect}"
         
         return result, boolConnect
     end
@@ -118,7 +118,7 @@ class Pegass
           result['isInTeamFormat']=isInTeamFormat
           result['role']=role
         rescue => exception
-          logger.error exception
+          # logger.error exception
           boolConnect = false
         end
         
@@ -156,12 +156,12 @@ class Pegass
     def displayCookies()
         
         agent.cookie_jar.each do |site|
-            logger.info site.inspect
+            # logger.info site.inspect
         end
     end
     
     def callUrl(path)
-        # logger.info "Get " + path
+        # # logger.info "Get " + path
         url_path = @url + path        
         page = @agent.get url_path
         return JSON.parse(page.body)

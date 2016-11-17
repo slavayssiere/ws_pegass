@@ -22,7 +22,7 @@ class StatsMaraude
         listsession['list'].each do |session|
             begin           
                 inscription_activite = @pegass.callUrl("/crf/rest/activite/#{session['activite']['id']}")                
-                # logger.info "#{nb_maraude}: #{inscription_activite['statut']}"
+                # # logger.info "#{nb_maraude}: #{inscription_activite['statut']}"
                 if(inscription_activite['statut'].eql? 'Complète' or inscription_activite['statut'].eql? 'Incomplète')
                     begin                    
                         nb_maraude = nb_maraude + 1
@@ -77,7 +77,7 @@ class StatsMaraude
                             end
                         end
                     rescue => detail
-                        logger.error detail
+                        # logger.error detail
                     end
                 elsif(inscription_activite['statut'].eql? 'Incomplète')
                     block = {}
@@ -88,11 +88,11 @@ class StatsMaraude
                     block['date']=inscription_activite['seanceList'][0]['debut']
                     session_annulee.push block
                 else
-                    logger.info "error"
-                    logger.info inscription_activite
+                    # logger.info "error"
+                    # logger.info inscription_activite
                 end
             rescue => detail
-                logger.error detail
+                # logger.error detail
             end
         end
         

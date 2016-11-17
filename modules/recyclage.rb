@@ -13,7 +13,7 @@ module Sinatra
                     recyclages = recyclage.listStructure(params['ul'])
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
                 
@@ -26,7 +26,7 @@ module Sinatra
                     recyclages = recyclage.listStructureCompetence(params['competence'], params['competencecode'], params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
                 
@@ -39,7 +39,7 @@ module Sinatra
                     recyclages = recyclage.listStructureCompetenceDD(params['competence'], params['competencecode'], params['dd'], params['page'])
                     status 200
                 rescue => exception
-                    logger.error exception
+                    # logger.error exception
                     status 500
                 end
                 

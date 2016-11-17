@@ -20,10 +20,10 @@ module Sinatra
                     :version => "2.0.1" 
                 }
                 
-                logger.info "call version"
-                logger.warn "call version warning"
-                logger.error "call version error"
-                
+                # logger.info "call version"
+                # logger.warn "call version warning"
+                # logger.error "call version error"
+
                 "#{result.to_json}"
             end
 
