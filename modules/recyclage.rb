@@ -13,7 +13,8 @@ module Sinatra
                     recyclages = recyclage.listStructure(params['ul'])
                     status 200
                 rescue => exception
-                    status 401
+                    puts exception
+                    status 500
                 end
                 
                 "#{recyclages.to_json}"
@@ -25,7 +26,8 @@ module Sinatra
                     recyclages = recyclage.listStructureCompetence(params['competence'], params['competencecode'], params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    status 401
+                    puts exception
+                    status 500
                 end
                 
                 "#{recyclages.to_json}"
