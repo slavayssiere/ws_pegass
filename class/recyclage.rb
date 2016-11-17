@@ -10,7 +10,7 @@ class RecyclagesClass
     end
     
     def listStructure(ul)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page=0&pageInfo=true&perPage=600&structure='+ul)
 
         unite = {}
         unite['list']=[]
@@ -87,7 +87,7 @@ class RecyclagesClass
     end
     
     def listStructureCompetence(competence, competencecode, ul, page)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&action='+ul+'&formation='+competence+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&formation='+competence+'&page=0&pageInfo=true&perPage=600&structure='+ul)
 
         unite = {}
         unite['list']=[]
