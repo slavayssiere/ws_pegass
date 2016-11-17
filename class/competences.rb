@@ -70,7 +70,7 @@ class CompetencesClass
         
             ret = benevoleComplexe(benevole['id'], competence, nocompetence)
             
-            # puts "#{benevole['nom']}, #{competence} (yes) #{nocompetence} (no): #{ret}"
+            # logger.info "#{benevole['nom']}, #{competence} (yes) #{nocompetence} (no): #{ret}"
             if ret==true
                 comp_bene = {}
                 comp_bene['nivol']=benevole['id']
@@ -119,7 +119,7 @@ class CompetencesClass
                     dateRecyclage = Date.parse formation['dateRecyclage']
                     avantRecyclage = endOfYear - dateRecyclage
                     
-                    # puts "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
+                    # logger.info "#{formation['dateRecyclage']} vs #{endOfYear} = #{avantRecyclage}"
                     
                     if(avantRecyclage <= 0)
                         ret = true

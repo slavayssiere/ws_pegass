@@ -141,17 +141,17 @@ class StatsReseau
                                     ret_ci.push block
                                 end
                             else
-                                puts inscription_session
+                                logger.info inscription_session
                             end
                         end                      
                     else
-                        puts "inscription nil"
+                        logger.info "inscription nil"
                     end
                 rescue => detail
-                    puts detail
+                    logger.error detail
                 end
             rescue => detail
-                puts detail
+                logger.error detail
             end
         end
         

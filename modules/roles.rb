@@ -13,7 +13,7 @@ module Sinatra
                     role_ret = role.listStructureWithRole(params['role'], params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    puts exception
+                    logger.error exception
                     status 500
                 end
                 
@@ -26,7 +26,7 @@ module Sinatra
                     role_ret = role.getRoles();
                     status 200
                 rescue => exception
-                    puts exception
+                    logger.error exception
                     status 500
                 end
                 

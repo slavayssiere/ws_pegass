@@ -13,7 +13,7 @@ module Sinatra
                     comp_ret = comp.listStructureWithCompetence(params['competence'], params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    puts exception
+                    logger.error exception
                     status 500
                 end
                 
@@ -22,12 +22,12 @@ module Sinatra
 
             app.get '/benevoles/competences/:competence/no' do
                 begin
-                    # puts "search competence (no) #{params['competence']}"
+                    # logger.error "search competence (no) #{params['competence']}"
                     comp = CompetencesClass.new(get_connexion['pegass'])
                     comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    puts exception
+                    logger.error exception
                     status 500
                 end
                 
@@ -40,7 +40,7 @@ module Sinatra
                     comp_ret = comp.listStructureComplexe(params['competence'], params['nocompetence'], params['ul'], params['page'])    
                     status 200
                 rescue => exception
-                    puts exception
+                    logger.error exception
                     status 500
                 end
                 

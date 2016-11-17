@@ -36,15 +36,15 @@ class Gaia
         url_policy = @url_identification + path_policy
         
 
-        # puts "First call"      
-        # puts "Go to #{url_policy}"
+        # logger.info "First call"      
+        # logger.info "Go to #{url_policy}"
         policy_page = @agent.get url_policy
         while policy_page.code[/30[12]/]         
             #gestion error logout
             if policy_page.header['location'].eql? "/my.logout.php3?errorcode=19"
                 policy_page = agent.get policy_page.header['location'] 
                 # policy_page.links.each do |link|
-                #     puts link.inspect 
+                #     logger.info link.inspect 
                 # end
                 policy_page = @agent.get url_root
             else
@@ -52,7 +52,7 @@ class Gaia
             end
         end
 
-        # puts "end of first call: #{policy_page.uri}"
+        # logger.info "end of first call: #{policy_page.uri}"
 
         search_form = policy_page.form_with :name => "e1"
         search_form.field_with(:name => "username").value  = username
@@ -61,16 +61,16 @@ class Gaia
       
         page = @agent.submit search_form
         while page.code[/30[12]/]
-            # puts page.header['location']
+            # logger.info page.header['location']
             page = @agent.get page.header['location']
         end
 
-        # puts "end of submit: #{policy_page.uri}"
+        # logger.info "end of submit: #{policy_page.uri}"
 
-        # puts "Go to https://gaia.croix-rouge.fr/crf-benevoles/"
+        # logger.info "Go to https://gaia.croix-rouge.fr/crf-benevoles/"
         page_gaia = @agent.get 'https://gaia.croix-rouge.fr/crf-benevoles/'
         while page_gaia.code[/30[12]/]
-          # puts page_gaia.header['location']
+          # logger.info page_gaia.header['location']
           page_gaia = @agent.get page_gaia.header['location']
         end
 
@@ -138,6 +138,7 @@ class Gaia
           result['state']=boolConnect
           #result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
         rescue => exception
+          logger.error exception
           boolConnect = false
         end
         
@@ -145,32 +146,32 @@ class Gaia
     end
     
     def displayCookies()
-        #puts agent.cookie_jar.inspect
+        #logger.info agent.cookie_jar.inspect
         
         @agent.cookie_jar.each do |cookie|
-            puts cookie.inspect
+            logger.info cookie.inspect
         end
     end
     
     def callUrl(path)
-        # puts "Get " + path
+        # logger.info "Get " + path
         url_path = @url_gaia + path        
         page = @agent.get url_path
-        # puts page.body        
+        # logger.info page.body        
         return JSON.parse(page.body)
     end
     
     def putUrl(path, data)
         url_path = @url_gaia + path             
         page = @agent.put url_path, data.to_json, {'Content-Type' => 'application/json'}
-        puts page.inspect
+        logger.info page.inspect
         return page.code
     end
 
     def postUrl(path, data)
         url_path = @url_gaia + path             
         page = @agent.post url_path, data.to_json, {'Content-Type' => 'application/json'}
-        puts page.inspect
+        logger.info page.inspect
         return page.code
     end
 end

@@ -20,6 +20,10 @@ module Sinatra
                     :version => "2.0.1" 
                 }
                 
+                logger.info "call version"
+                logger.warn "call version warning"
+                logger.error "call version error"
+                
                 "#{result.to_json}"
             end
 
@@ -27,7 +31,6 @@ module Sinatra
 
                 uri = URI('https://pegass.croix-rouge.fr/my.policy')
                 res = Net::HTTP.get_response(uri)
-                puts res.inspect
                 
                 result = { 
                     :status => "OK",

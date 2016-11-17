@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/base'
 require 'sinatra/cross_origin'
+require 'sinatra/logger'
 require './class/pegass'
 require './class/gaia'
 require './modules/benevoles'
@@ -14,6 +15,8 @@ require './modules/version'
 
 class PegassApp < Sinatra::Base
 
+  logger filename: "ws_pegass.log", level: :trace
+  
   register Sinatra::CrossOrigin
   register Sinatra::PegassApp::Connexion
   register Sinatra::PegassApp::Benevoles

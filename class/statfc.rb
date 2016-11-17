@@ -77,15 +77,15 @@ class StatsFc
                                     retassis.push block
                                 end
                             else
-                                puts inscription_session
+                                logger.info inscription_session
                             end
                         end
                     end
                 rescue => detail
-                    puts detail
+                    logger.error detail
                 end
             rescue => detail
-                puts detail
+                logger.error detail
             end
         end
         
