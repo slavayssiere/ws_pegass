@@ -4,6 +4,8 @@ Webservice to Pegass
 # Lancement en local
 Pour installer, après avoir cloner le projet
 
+```gem install bundler```
+
 ```bundle install```
 
 Vous pouvez ajouter 'rack' et 'rerun' avec une commande 'gem install'.
