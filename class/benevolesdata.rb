@@ -58,7 +58,7 @@ class BenevolesData
     
     def getDataList(ul, page)
         
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?action='+ul+'&page='+page+'&pageInfo=true&perPage=10&structure='+ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=10&structure='+ul)
         
         data = {}
         data['list']=[]
