@@ -126,7 +126,7 @@ class Pegass
     end
 
     def getUserInfo(nivol)
-        listTeamFormat = ['00001376977M', '00001669247X', '00001727030F', '00001701729E', '00001641554W', '00000599352T', '01000000106B']
+        listTeamFormat = ['00001376977M', '00001669247X', '00001727030F', '00001701729E', '00001641554W', '00000599352T', '01000000106B', '01000001367P']
         isInTeamFormat = false;
         if listTeamFormat.any? { |s| s.include?(nivol) }
             isInTeamFormat = true;
