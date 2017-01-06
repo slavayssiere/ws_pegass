@@ -16,6 +16,5 @@ RUN bundle install
 COPY . $APP_HOME
 
 # Start server
-ENV PORT 80
-EXPOSE 80
-CMD ["ruby", "ws.rb"]
+EXPOSE 8080
+CMD ["bundle", "exec", "rackup", "--host", "0.0.0.0", "-p", "8080"]

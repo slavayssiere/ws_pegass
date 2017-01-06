@@ -11,6 +11,7 @@ require './modules/connexion'
 require './modules/recyclage'
 require './modules/stats'
 require './modules/version'
+require './slack_bot/bot'
 
 
 class PegassApp < Sinatra::Base
@@ -60,6 +61,7 @@ class PegassApp < Sinatra::Base
       end
       params
     end
+
   end
   
   options "*" do
@@ -71,4 +73,7 @@ class PegassApp < Sinatra::Base
 
     halt 200
   end
+
+  pegassBot = PegassBot.new
+  pegassBot.start_bot
 end
