@@ -74,6 +74,4 @@ class PegassApp < Sinatra::Base
     halt 200
   end
 
-  pegassBot = PegassBot.new
-  pegassBot.start_bot
 end
