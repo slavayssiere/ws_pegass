@@ -10,7 +10,7 @@ class CompetencesClass
     end    
     
     def listStructureWithCompetence(competence, ul, page)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&page=0&pageInfo=true&perPage=10&structure='+ul)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=10&structure='+ul)
 
         competence_ul = {}
         competence_ul['list']=[]

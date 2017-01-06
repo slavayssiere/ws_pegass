@@ -1,4 +1,5 @@
 require 'slack-ruby-client'
+require 'date'
 
 class PegassBot
 
@@ -8,6 +9,8 @@ class PegassBot
     attr_accessor :si_crf
 
     def initialize()
+        
+        puts ENV['SLACK_API_TOKEN']
         
         Slack.configure do |config|
             config.token = ENV['SLACK_API_TOKEN']
@@ -62,11 +65,11 @@ class PegassBot
 
     def discussion_bot(data)
         case data.text
-        when 'pegass hi' then
+        when /[pP]egass hi/ then
             @client.message channel: data.channel, text: "Hi <@#{data.user}> connected with pegass: #{si_crf['pegass_connect']}!"
-        when 'pegass qui est le plus fort ?' then
+        when /[pP]egass qui est le plus fort ?/ then
             @client.message channel: data.channel, text: "C'est <@#{data.user}>!"
-        when 'pegass list ul 11' then
+        when /[pP]egass list ul 11/ then
             benevoles = @pegass.callUrl('/crf/rest/utilisateur?page=0&pageInfo=true&perPage=200&structure=899')
             msg = ""
             benevoles['list'].each do |benevole|
@@ -78,15 +81,40 @@ class PegassBot
             end
 
             @client.message channel: data.channel, text: msg
-        when 'pegass list cip2'
+        when /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
+            reg_sentence = /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
+            match_data = reg_sentence.match(data.text)
+            
+            puts "Search by Bot for #{match_data.captures[0]}"
             comp = CompetencesClass.new(@pegass)
-            comp_ret = comp.listStructureWithCompetence('CIP2', '899', '1')
-            puts comp_ret
-            comp_ret['list'].each do |benevole|
-                puts benevole['prenom']
-                @client.message channel: data.channel, text: "Et #{benevole['prenom']} #{benevole['nom']}!"
+            msg = ""
+            nb_loop = 0
+            loop do
+                comp_ret = comp.listStructureWithCompetence(match_data.captures[0], '899', "#{nb_loop}")
+                comp_ret['list'].each do |benevole|
+                    msg += "#{benevole['prenom']} #{benevole['nom']}, \n"
+                end
+                nb_loop = nb_loop + 1
+                break if nb_loop >= comp_ret['pages']
             end
-                    
+
+             @client.message channel: data.channel, text: msg
+        when /[pP]egass quoi de neuf ?/
+            date_ajdh=DateTime.now.strftime("%Y-%m-%d")
+            list_activite = @pegass.callUrl("/crf/rest/activite?debut=#{date_ajdh}&fin=#{date_ajdh}&structure=899")
+            list_activite.each do |activite|
+                benevole = @pegass.callUrl("/crf/rest/utilisateur/#{activite['responsable']['id']}")
+                
+                msg = "*#{activite['libelle']}*, le responsable est #{benevole['prenom']} #{benevole['nom']} sur le poste:\n"
+                
+                inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{activite['seanceList'][0]['id']}/inscription")
+                inscription_sessions.each do |inscrit|
+                    benevole_inscrit = @pegass.callUrl("/crf/rest/utilisateur/#{inscrit['utilisateur']['id']}")
+                    msg += "- #{benevole_inscrit['prenom']} #{benevole_inscrit['nom']}\n"
+                end
+                @client.message channel: data.channel, text: msg
+            end
+            
         when /^pegass/ then
             @client.message channel: data.channel, text: "Sorry <@#{data.user}>, what?"
         end
