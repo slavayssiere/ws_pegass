@@ -1,5 +1,7 @@
 require 'slack-ruby-client'
 require 'date'
+require_relative '../class/pegass'
+require_relative '../class/gaia'
 
 class PegassBot
 
@@ -11,7 +13,7 @@ class PegassBot
     def initialize()
         
         puts ENV['SLACK_API_TOKEN']
-        
+
         Slack.configure do |config|
             config.token = ENV['SLACK_API_TOKEN']
             fail 'Missing ENV[SLACK_API_TOKEN]!' unless config.token
@@ -115,7 +117,7 @@ class PegassBot
                 @client.message channel: data.channel, text: msg
             end
             
-        when /^pegass/ then
+        when /^[pP]egass/ then
             @client.message channel: data.channel, text: "Sorry <@#{data.user}>, what?"
         end
     end
