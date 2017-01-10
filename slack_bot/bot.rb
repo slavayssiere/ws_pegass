@@ -1,7 +1,9 @@
 require 'slack-ruby-client'
 require 'date'
+require 'logger'
 require_relative '../class/pegass'
 require_relative '../class/gaia'
+require_relative '../class/competences'
 
 class PegassBot
 
@@ -10,9 +12,13 @@ class PegassBot
     attr_accessor :gaia
     attr_accessor :si_crf
 
+
+    attr_accessor :logger
+
     def initialize()
         
-        puts ENV['SLACK_API_TOKEN']
+        @logger = Logger.new('/var/log/pegass-bot.log')
+        @logger.info("Token for Slack: #{ENV['SLACK_API_TOKEN']}")
 
         Slack.configure do |config|
             config.token = ENV['SLACK_API_TOKEN']
@@ -22,19 +28,23 @@ class PegassBot
         @client = Slack::RealTime::Client.new
 
         @client.on :hello do
-            puts "Successfully connected, welcome '#{@client.self.name}' to the '#{@client.team.name}' team at https://#{@client.team.domain}.slack.com."
+            @logger.info "Successfully connected, welcome '#{@client.self.name}' to the '#{@client.team.name}' team at https://#{@client.team.domain}.slack.com."
         end
 
         @client.on :close do |_data|
-            puts "Client is about to disconnect"
+            @logger.info "Client is about to disconnect"
         end
 
         @client.on :closed do |_data|
-            puts "Client has disconnected successfully!"
+            @logger.info "Client has disconnected successfully!"
         end
 
         @client.on :message do |data|
-            discussion_bot(data)
+            begin
+                discussion_bot(data)
+            rescue => exception
+                @logger.error exception
+            end
         end
 
 
@@ -43,6 +53,7 @@ class PegassBot
     end
 
     def start_bot
+        @logger.info "Logger start!"
         @client.start!
     end
 
@@ -51,10 +62,10 @@ class PegassBot
         gaia = Gaia.new
         params = {}
 
-        puts "conenction to pegass"
+        @logger.info "connection to pegass"
         res_pegass, pegassConnect = pegass.connect(ENV['PEGASS_LOGIN'], ENV['PEGASS_PASSWORD'])
 
-        puts "connection to gaia"
+        @logger.info "connection to gaia"
         res_gaia, gaiaConnect = gaia.connect(ENV['PEGASS_LOGIN'], ENV['PEGASS_PASSWORD'])
 
         params['res_pegass']=res_pegass
@@ -66,9 +77,11 @@ class PegassBot
     end
 
     def discussion_bot(data)
+        @si_crf, @pegass, @gaia=connect_pegass
+
         case data.text
         when /[pP]egass hi/ then
-            @client.message channel: data.channel, text: "Hi <@#{data.user}> connected with pegass: #{si_crf['pegass_connect']}!"
+            @client.message channel: data.channel, text: "Bonjour <@#{data.user}>, bonne journée !"
         when /[pP]egass qui est le plus fort ?/ then
             @client.message channel: data.channel, text: "C'est <@#{data.user}>!"
         when /[pP]egass list ul 11/ then
@@ -78,16 +91,46 @@ class PegassBot
                 begin
                     msg += "#{benevole['prenom']} #{benevole['nom']}, \n"
                 rescue => exception
-                    puts exception
+                    logger.error exception
                 end
             end
 
             @client.message channel: data.channel, text: msg
         when /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
-            reg_sentence = /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
+            pegass_list_competence(data)
+        when /[pP]egass quoi de neuf ?/
+            pegass_quoi_neuf(data)
+        when /[pP]egass [a-zA-Z ]*help[a-zA-Z ]*/
+            pegass_help(data)
+        when /^[pP]egass/ then
+            @logger.info "Pegass, text non compris: #{data.text}"
+            @client.message channel: data.channel, text: "Sorry <@#{data.user}>, what?"
+        end
+    end
+
+
+    def pegass_help(data)
+        @logger.info "Pegass help"
+        begin
+            msg = "Salut <@#{data.user}>, ce bot est une interface à Pegass, tu peux utiliser les commandes:\n"
+            msg += " - 'Pegass hi', pour me dire bonjour. /[pP]egass hi/\n"
+            msg += " - 'Pegass qui est le plus fort ?', pour flatter ton ego. /[pP]egass qui est le plus fort ?/\n"
+            msg += " - 'Pegass list ul 11', pour avoir la liste des gens de l'ul. /[pP]egass list ul 11/\n"
+            msg += " - 'Pegass liste -', où - est remplacé par une compétence recherchée (ex:PSE1). /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/\n"
+            msg += " - 'Pegass quoi de neuf ?' pour avoir les activités du jour. /[pP]egass quoi de neuf ?/\n"
+            msg += "et enfin 'Pegass help' pour avoir cette commande"
+            @client.message channel: data.channel, text: msg
+        rescue => exception
+            @logger.error exception
+        end
+    end
+
+    def pegass_list_competence(data)
+        reg_sentence = /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
+        begin
             match_data = reg_sentence.match(data.text)
             
-            puts "Search by Bot for #{match_data.captures[0]}"
+            @logger.info "Search by Bot for #{match_data.captures[0]}"
             comp = CompetencesClass.new(@pegass)
             msg = ""
             nb_loop = 0
@@ -101,7 +144,14 @@ class PegassBot
             end
 
              @client.message channel: data.channel, text: msg
-        when /[pP]egass quoi de neuf ?/
+        rescue => exception
+            @logger.error exception
+        end
+    end
+
+    def pegass_quoi_neuf(data)
+        @logger.info "Pegass, news"
+        begin
             date_ajdh=DateTime.now.strftime("%Y-%m-%d")
             list_activite = @pegass.callUrl("/crf/rest/activite?debut=#{date_ajdh}&fin=#{date_ajdh}&structure=899")
             list_activite.each do |activite|
@@ -116,10 +166,8 @@ class PegassBot
                 end
                 @client.message channel: data.channel, text: msg
             end
-            
-        when /^[pP]egass/ then
-            @client.message channel: data.channel, text: "Sorry <@#{data.user}>, what?"
+        rescue => exception
+            @logger.error exception
         end
     end
-
 end
