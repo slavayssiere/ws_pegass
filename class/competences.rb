@@ -33,7 +33,30 @@ class CompetencesClass
         competence_ul['last_page']=page
         competence_ul['pages']=benevoles['pages']
         return competence_ul
-    end        
+    end    
+
+    def listStructureWithCompetenceId(competenceid, type, ul, page)
+        searchstring = "formation"
+        if type.eql? "COMP"
+            searchstring = "role"
+        end
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?'+searchstring+'='+competenceid+'&page='+page+'&pageInfo=true&perPage=10&structure='+ul)
+        competence_ul = {}
+        competence_ul['list']=[]
+        benevoles['list'].each do | benevole |
+            # {id: "00000023206Z", structure: {id: 899}, nom: "ADRIEN", prenom: "Alain", actif: true}
+        
+            comp_bene = {}
+            comp_bene['nivol']=benevole['id']
+            comp_bene['prenom']=benevole['prenom']
+            comp_bene['nom']=benevole['nom']
+            competence_ul['list'].push comp_bene    
+        end
+        
+        competence_ul['last_page']=page
+        competence_ul['pages']=benevoles['pages']
+        return competence_ul
+    end       
     
     def listStructureWithoutCompetence(competence, ul, page)
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&page=0&pageInfo=true&perPage=10&structure='+ul)
@@ -133,7 +156,7 @@ class CompetencesClass
         
         return ret
     end
-    
+
     def benevoleWithoutCompetence(nivol, competence)
         ret = true
            
@@ -162,5 +185,22 @@ class CompetencesClass
        end
        
        return ret
+    end
+
+    def get_id_formation(competence_search)
+        competences = @pegass.callUrl('/crf/rest/roles')
+        cid = 0 
+        type = ""
+        competences.each do |competence|
+            begin
+                if competence['libelle'] =~ /^#{competence_search} [a-zA-Z0-9() ]*/
+                    cid = competence['id']
+                    type = competence['type']
+                end
+            rescue => exception
+                logger.error exception
+            end
+        end
+        return cid, type
     end
 end

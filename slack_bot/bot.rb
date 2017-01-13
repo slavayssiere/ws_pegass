@@ -96,7 +96,9 @@ class PegassBot
             end
 
             @client.message channel: data.channel, text: msg
-        when /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
+        when /[pP]egass list[es]* competence[s]*/
+            pegass_list_role(data)
+        when /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*'(?<match_data>[a-zA-Z0-9 ]*)'/
             pegass_list_competence(data)
         when /[pP]egass quoi de neuf ?/
             pegass_quoi_neuf(data)
@@ -115,8 +117,9 @@ class PegassBot
             msg = "Salut <@#{data.user}>, ce bot est une interface à Pegass, tu peux utiliser les commandes:\n"
             msg += " - 'Pegass hi', pour me dire bonjour. /[pP]egass hi/\n"
             msg += " - 'Pegass qui est le plus fort ?', pour flatter ton ego. /[pP]egass qui est le plus fort ?/\n"
+            msg += " - 'pegass list competences', pour avoir la liste des competences, nomination et formations. /[pP]egass list[es]* competence[s]*/"
             msg += " - 'Pegass list ul 11', pour avoir la liste des gens de l'ul. /[pP]egass list ul 11/\n"
-            msg += " - 'Pegass liste -', où - est remplacé par une compétence recherchée (ex:PSE1). /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/\n"
+            msg += " - 'Pegass liste '-' ', où - est remplacé par une compétence/nomination/formation recherchée (ex:PSE1). /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/\n"
             msg += " - 'Pegass quoi de neuf ?' pour avoir les activités du jour. /[pP]egass quoi de neuf ?/\n"
             msg += "et enfin 'Pegass help' pour avoir cette commande"
             @client.message channel: data.channel, text: msg
@@ -125,25 +128,53 @@ class PegassBot
         end
     end
 
+    def pegass_list_role(data)
+        begin
+            competences = @pegass.callUrl('/crf/rest/roles')
+            complist = "*Liste compétences:* \n"
+            nomilist = "*Liste nominations:* \n"
+            formlist = "*Liste formations:* \n"
+            competences.each do |competence|
+                begin
+                    if competence['type'].eql? "COMP"
+                        complist += "- #{competence['libelle']}, \n"
+                    elsif competence['type'].eql? "NOMI"
+                        nomilist += "- #{competence['libelle']}, \n"
+                    elsif competence['type'].eql? "FORM"
+                        formlist += "- #{competence['libelle']}, \n"
+                    end
+                rescue => exception
+                    @logger.error exception
+                end
+            end
+            @client.message channel: data.channel, text: complist
+            @client.message channel: data.channel, text: nomilist
+            @client.message channel: data.channel, text: formlist
+        rescue => exception
+            @logger.error exception
+        end
+    end
+
     def pegass_list_competence(data)
-        reg_sentence = /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/
+        reg_sentence = /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*'(?<match_data>[a-zA-Z0-9 ]*)'/
+
         begin
             match_data = reg_sentence.match(data.text)
-            
             @logger.info "Search by Bot for #{match_data.captures[0]}"
             comp = CompetencesClass.new(@pegass)
-            msg = ""
+            cid,type = comp.get_id_formation(match_data.captures[0])
+            msg_loop = ""
             nb_loop = 0
             loop do
-                comp_ret = comp.listStructureWithCompetence(match_data.captures[0], '899', "#{nb_loop}")
+                comp_ret = comp.listStructureWithCompetenceId(cid,type, '899', "#{nb_loop}")
                 comp_ret['list'].each do |benevole|
-                    msg += "#{benevole['prenom']} #{benevole['nom']}, \n"
+                    msg_loop += "#{benevole['prenom']} #{benevole['nom']}, \n"
                 end
                 nb_loop = nb_loop + 1
                 break if nb_loop >= comp_ret['pages']
             end
 
-             @client.message channel: data.channel, text: msg
+             @client.message channel: data.channel, text: msg_loop
         rescue => exception
             @logger.error exception
         end
@@ -161,9 +192,11 @@ class PegassBot
                 
                 inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{activite['seanceList'][0]['id']}/inscription")
                 inscription_sessions.each do |inscrit|
+                    puts inscrit
                     benevole_inscrit = @pegass.callUrl("/crf/rest/utilisateur/#{inscrit['utilisateur']['id']}")
-                    msg += "- #{benevole_inscrit['prenom']} #{benevole_inscrit['nom']}\n"
+                    msg += "- #{benevole_inscrit['prenom']} #{benevole_inscrit['nom']}, statut: #{inscrit['statut']}\n"
                 end
+                puts msg
                 @client.message channel: data.channel, text: msg
             end
         rescue => exception
