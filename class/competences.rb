@@ -193,9 +193,15 @@ class CompetencesClass
         type = ""
         competences.each do |competence|
             begin
-                if competence['libelle'] =~ /^#{competence_search} [a-zA-Z0-9() ]*/
+                if competence['libelle'] =~ /^#{competence_search}\s+[a-zA-Z0-9() ]*/
                     cid = competence['id']
                     type = competence['type']
+                    puts "case1: #{competence['libelle']}"
+                    break
+                elsif competence['libelle'] =~ /^#{competence_search}/
+                    cid = competence['id']
+                    type = competence['type']
+                    puts "case2: #{competence['libelle']}"
                 end
             rescue => exception
                 logger.error exception
