@@ -135,9 +135,11 @@ class Pegass
         role = "user"
         if nivol.eql? '00001376977M'
             role = "admin"
-        elsif nivol.eql? '00000040109X'
-            role = "ddaf" 
         elsif nivol.eql? '00000039302V'
+            role = "ddaf" 
+        elsif nivol.eql? '00001220657A'
+            role = "ddaf" 
+        elsif nivol.eql? '00001226177A'
             role = "ddaf"
         else
             nominations = callUrl("/crf/rest/nominationutilisateur?utilisateur=#{nivol}")

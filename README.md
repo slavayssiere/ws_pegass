@@ -17,7 +17,8 @@ rerun rackup
 #Via Docker
 
 ```
-docker build -t ws_pegass .
+docker build -t slavayssiere/ws_pegass .
+docker build -t slavayssiere/bot_pegass -f ./DockerfileBot
 docker run --name ws_pegass_server -p 3000 -d ws_pegass
 ```
 

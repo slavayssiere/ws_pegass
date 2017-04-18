@@ -47,7 +47,6 @@ class PegassBot
             end
         end
 
-
         @si_crf, @pegass, @gaia=connect_pegass
 
     end

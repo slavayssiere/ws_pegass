@@ -18,15 +18,15 @@ class StatsFormateur
         compteur = {}
         compteurassis = {}
         listsession['list'].each do |session|
-            begin           
-                inscription_activite = @pegass.callUrl("/crf/rest/activite/#{session['activite']['id']}")  
-                if(inscription_activite['statut'].eql? 'Clos')
+            begin
+                inscription_activite = @pegass.callUrl("/crf/rest/activite/#{session['activite']['id']}")
+                if(inscription_activite['statut'].eql?('Clos') || inscription_activite['statut'].eql?('Complète'))
                     begin
                         inscription_sessions = @pegass.callUrl("/crf/rest/seance/#{session['id']}/inscription")
                         if(!inscription_sessions.nil?)
                             inscription_sessions.each do |inscription_session|
                                 user = @pegass.callUrl("/crf/rest/utilisateur/#{inscription_session['utilisateur']['id']}")
-                                if(inscription_session['role'].eql? "FORMATEUR")
+                                if(inscription_session['role'].eql?("FORMATEUR") || inscription_session['role'].eql?("316"))
                                     if(!compteur[inscription_session['utilisateur']['id']].nil?)
                                         compteur[inscription_session['utilisateur']['id']]=compteur[inscription_session['utilisateur']['id']]+1   
                                         i=0

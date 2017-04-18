@@ -39,18 +39,23 @@ class CompetencesClass
         searchstring = "formation"
         if type.eql? "COMP"
             searchstring = "role"
-        end
+        elsif type.eql? "NOMI"
+            searchstring = "nomination"
+        end 
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?'+searchstring+'='+competenceid+'&page='+page+'&pageInfo=true&perPage=10&structure='+ul)
+        puts '/crf/rest/utilisateur?'+searchstring+'='+competenceid+'&page='+page+'&pageInfo=true&perPage=10&structure='+ul
         competence_ul = {}
         competence_ul['list']=[]
-        benevoles['list'].each do | benevole |
-            # {id: "00000023206Z", structure: {id: 899}, nom: "ADRIEN", prenom: "Alain", actif: true}
-        
-            comp_bene = {}
-            comp_bene['nivol']=benevole['id']
-            comp_bene['prenom']=benevole['prenom']
-            comp_bene['nom']=benevole['nom']
-            competence_ul['list'].push comp_bene    
+        if benevoles['list'] != nil 
+            benevoles['list'].each do | benevole |
+                # {id: "00000023206Z", structure: {id: 899}, nom: "ADRIEN", prenom: "Alain", actif: true}
+            
+                comp_bene = {}
+                comp_bene['nivol']=benevole['id']
+                comp_bene['prenom']=benevole['prenom']
+                comp_bene['nom']=benevole['nom']
+                competence_ul['list'].push comp_bene    
+            end
         end
         
         competence_ul['last_page']=page
@@ -129,13 +134,12 @@ class CompetencesClass
         
         return ret
     end
-    
+
     def benevoleWithCompetence(nivol, competence)
         ret = false
         endOfYear = Date.parse("#{Date.today.year}-12-31")
         
-        formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
-            
+        formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")  
         formations.each do | formation |            
             if formation['formation']['code']==competence
                 if(formation['dateRecyclage'])
@@ -169,6 +173,32 @@ class CompetencesClass
         end    
         
         return ret
+    end
+
+    def listCompetences()
+       ret = {}
+       ret['competences']=[]
+       ret['nominations']=[]
+       ret['formations']=[]
+       comps = @pegass.callUrl("/crf/rest/roles")
+       comps.each do |comp|
+           begin
+                block = {}
+                block['id']=comp['id']
+                block['libelle']=comp['libelle']
+                if comp['type'].eql? "COMP"
+                    ret['competences'].push block
+                elsif comp['type'].eql? "NOMI"
+                    ret['nominations'].push block
+                elsif comp['type'].eql? "FORM"
+                    ret['formations'].push block
+                end
+            rescue => exception
+                logger.info exception
+            end
+       end
+       
+       return ret
     end
     
     def getCompetences()

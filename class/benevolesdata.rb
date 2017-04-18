@@ -53,6 +53,8 @@ class BenevolesData
             end        
         end
         
+        benevole_com['nivol']=nivol
+        
         return benevole_com
     end
     

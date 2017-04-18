@@ -55,7 +55,7 @@ class RecyclagesClass
         return nbRecyclage, recyclage_bene
     end
     
-    def benevoleCompetence(nivol, competence)
+    def benevoleCompetence(nivol, competenceid)
         formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
         endOfYear = Date.parse("#{Date.today.year}-12-31")
         
@@ -64,7 +64,7 @@ class RecyclagesClass
         outOfdate = false
         recyclage_bene={}
         formations.each do | formation |
-            if formation['formation']['code'] == competence
+            if formation['formation']['id'] == competenceid
                 if(formation['dateRecyclage'])
                     dateRecyclage = Date.parse formation['dateRecyclage']
                     avantRecyclage = endOfYear - dateRecyclage
@@ -86,72 +86,53 @@ class RecyclagesClass
         return bARecycler, outOfdate, dateRecyclage
     end
     
-    def listStructureCompetence(competence, competencecode, ul, page)
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&formation='+competence+'&page=0&pageInfo=true&perPage=600&structure='+ul)
+    def listStructureCompetence(competenceid, ul, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&formation='+competenceid+'&page=0&pageInfo=true&perPage=10&structure='+ul)
+        return parseArecycler(benevoles, competenceid, page)
+    end
 
+    def parseArecycler(benevoles, competenceid, page)
+        
         unite = {}
         unite['list']=[]
         unite['out']=[]
 
-        benevoles['list'].each do | benevole |
-            # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
-        
-            data_bene={}
-            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competencecode)
+        begin 
+            benevoles['list'].each do | benevole |
+                # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
             
-            if(bARecycler)
-                # # logger.info "#{benevole['nom']}"
-                data_bene['nivol']=benevole['id']
-                data_bene['nom']=benevole['nom']
-                data_bene['prenom']=benevole['prenom']
-                data_bene['date']=dateRecyclage
+                data_bene={}
+                bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competenceid)
                 
-                if(outOfdate)
-                    unite['out'].push data_bene
-                else
-                    unite['list'].push data_bene
+                if(bARecycler)
+                    # # logger.info "#{benevole['nom']}"
+                    data_bene['nivol']=benevole['id']
+                    data_bene['nom']=benevole['nom']
+                    data_bene['prenom']=benevole['prenom']
+                    data_bene['date']=dateRecyclage
+                    
+                    if(outOfdate)
+                        unite['out'].push data_bene
+                    else
+                        unite['list'].push data_bene
+                    end 
                 end 
-            end 
+            end
+        rescue => exception
+            puts exception
         end
-        
         
         unite['last_page']=page
         unite['pages']=benevoles['pages']
+
+        puts unite
+
         return unite
     end
     
-    def listStructureCompetenceDD(competence, competencecode, dd, page)
-    
-        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=11&zoneGeoId='+dd+'&zoneGeoType=departement&formation='+competence)
-        
-        unite = {}
-        unite['list']=[]
-        unite['out']=[]
-
-        benevoles['list'].each do | benevole |
-            # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
-        
-            data_bene={}
-            bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competencecode)
-            
-            if(bARecycler)
-                # # logger.info "#{benevole['nom']}"
-                data_bene['nivol']=benevole['id']
-                data_bene['nom']=benevole['nom']
-                data_bene['prenom']=benevole['prenom']
-                data_bene['date']=dateRecyclage
-                
-                if(outOfdate)
-                    unite['out'].push data_bene
-                else
-                    unite['list'].push data_bene
-                end 
-            end 
-        end
-        
-        unite['last_page']=page
-        unite['pages']=benevoles['pages']
-        return unite
+    def listStructureCompetenceDD(competenceid, dd, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=11&zoneGeoId='+dd+'&zoneGeoType=departement&formation='+competenceid)
+        return parseArecycler(benevoles, competenceid, page)
     end
 
 end

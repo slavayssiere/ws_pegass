@@ -7,6 +7,32 @@ module Sinatra
     module Competences
         def self.registered(app)
 
+            app.get '/competences' do 
+                begin
+                    comp = CompetencesClass.new(get_connexion['pegass'])
+                    comp_ret = comp.listCompetences()
+                    status 200
+                rescue => exception
+                    logger.error exception
+                    status 500
+                end
+
+                "#{comp_ret.to_json}"
+            end
+
+            app.get '/competences/:type/:competenceid' do 
+                begin
+                    comp = CompetencesClass.new(get_connexion['pegass'])
+                    comp_ret = comp.listStructureWithCompetenceId(params['competenceid'], params['type'], params['ul'], params['page'])
+                    status 200
+                rescue => exception
+                    logger.error exception
+                    status 500
+                end
+
+                "#{comp_ret.to_json}"
+            end
+
             app.get '/benevoles/competences/:competence/yes' do
                 begin
                     comp = CompetencesClass.new(get_connexion['pegass'])

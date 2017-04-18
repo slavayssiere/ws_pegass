@@ -20,23 +20,23 @@ module Sinatra
                 "#{recyclages.to_json}"
             end
 
-            app.get '/benevoles/recyclages/:competence/:competencecode' do
+            app.get '/benevoles/recyclages/:competenceid' do
                 begin
                     recyclage = RecyclagesClass.new(get_connexion['pegass'])
-                    recyclages = recyclage.listStructureCompetence(params['competence'], params['competencecode'], params['ul'], params['page'])
+                    recyclages = recyclage.listStructureCompetence(params['competenceid'], params['ul'], params['page'])
                     status 200
                 rescue => exception
-                    # logger.error exception
+                    logger.error exception
                     status 500
                 end
                 
                 "#{recyclages.to_json}"
             end
 
-            app.get '/benevoles/recyclagesdd/:competence/:competencecode' do
+            app.get '/benevoles/recyclagesdd/:competenceid' do
                 begin
                     recyclage = RecyclagesClass.new(get_connexion['pegass'])
-                    recyclages = recyclage.listStructureCompetenceDD(params['competence'], params['competencecode'], params['dd'], params['page'])
+                    recyclages = recyclage.listStructureCompetenceDD(params['competenceid'], params['dd'], params['page'])
                     status 200
                 rescue => exception
                     # logger.error exception
