@@ -66,7 +66,7 @@ class BenevolesData
         data['list']=[]
 
         benevoles['list'].each do | benevole |  
-            data['list'].push benevole_data(benevole)                                   
+            data['list'].push benevole_data_get(benevole)                                   
         end
         
         
@@ -75,7 +75,7 @@ class BenevolesData
         return data
     end
     
-    def benevole_data(benevole)
+    def benevole_data_get(benevole)
         ben = pegass.callUrl("/crf/rest/infoutilisateur/#{benevole['id']}")
         
         benevole_data = {}
@@ -90,6 +90,17 @@ class BenevolesData
         
         return benevole_data
     end   
+
+    def get_benevole_infos(nivol)
+        ben = pegass.callUrl("/crf/rest/utilisateur/#{nivol}")
+        benevole_data = benevole_data_get(ben)
+        benevole_com = benevole(nivol)
+
+        benevole_data['email'] = benevole_com['email']
+        benevole_data['portable'] = benevole_com['portable']
+
+        return benevole_data
+    end
     
     def changeinfo(benevol, nivol)
         # {"id":"00001376977M","allow_external":true,"allow_email":true,"prenom":"Sebastien","nom":"LAVAYSSIERE","date_naissance":"1986-03-06T00:00:00","mailMoyenComId":"00001376977M_MAILDOM_2"}

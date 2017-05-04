@@ -78,6 +78,17 @@ module Sinatra
                 end
             end
 
+
+            app.put '/benevoles/:nivol' do
+                begin
+                    data = BenevolesData.new(get_connexion['pegass'])
+                    status data.get_benevole_infos(params['nivol'])
+                rescue => exception
+                    # logger.error exception
+                    status 500
+                end
+            end
+
             app.get '/benevoles/address/:idgaia' do
                 begin  
                     bens_ret = get_connexion['gaia'].callUrl("/crf-benevoles/contact/#{params['idgaia']}/mesInfos")   

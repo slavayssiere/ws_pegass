@@ -29,7 +29,7 @@ module Sinatra
 
             app.get '/version' do
                 result = { 
-                    :version => "2.0.1" 
+                    :version => "2.0.2" 
                 }
                 
                 # logger.info "call version"
