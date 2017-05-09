@@ -43,3 +43,6 @@ Gemfile.lock
 
 test.rb
 *.log
+
+version.json
+version.json.bak

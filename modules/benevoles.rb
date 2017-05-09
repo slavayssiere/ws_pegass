@@ -79,14 +79,17 @@ module Sinatra
             end
 
 
-            app.put '/benevoles/:nivol' do
+            app.get '/benevoles/:nivol' do
                 begin
-                    data = BenevolesData.new(get_connexion['pegass'])
-                    status data.get_benevole_infos(params['nivol'])
+                    bens = BenevolesData.new(get_connexion['pegass'])
+                    bens_ret = bens.get_benevole_infos(params['nivol'])
+                    status 200
                 rescue => exception
                     # logger.error exception
                     status 500
                 end
+
+                "#{bens_ret.to_json}"
             end
 
             app.get '/benevoles/address/:idgaia' do

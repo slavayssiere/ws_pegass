@@ -15,7 +15,7 @@ require './modules/version'
 
 class PegassApp < Sinatra::Base
 
-  logger filename: "/var/log/ws_pegass.log", level: :trace
+  logger filename: "ws_pegass.log", level: :trace
   
   register Sinatra::CrossOrigin
   register Sinatra::PegassApp::Connexion
@@ -67,6 +67,7 @@ class PegassApp < Sinatra::Base
     # response.headers["Allow"] = "HEAD,GET,PUT,DELETE,OPTIONS"
     response.headers['Access-Control-Allow-Methods'] = "HEAD,GET,PUT,DELETE,POST,OPTIONS"
 
+    response.headers['Access-Control-Allow-Origin'] = "*"
     # Needed for AngularJS
     response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization, username, password, F5-ST, LastMRH-Session, MRHSession, JSESSIONID, SAML"
 

@@ -28,15 +28,17 @@ module Sinatra
             end
 
             app.get '/version' do
-                result = { 
-                    :version => "2.0.2" 
-                }
+                # result = { 
+                #     :version => "2.0.2" 
+                # }
                 
                 # logger.info "call version"
                 # logger.warn "call version warning"
                 # logger.error "call version error"
 
-                "#{result.to_json}"
+                # "#{result.to_json}"
+                content_type :json
+                send_file('version.json', :type => "application/json")
             end
 
             app.get '/health' do  
