@@ -63,7 +63,13 @@ class CompetencesClass
         return competence_ul
     end       
     
-    def listStructureWithoutCompetence(competence, ul, page)
+    def listStructureWithoutCompetence(competenceid, type, ul, page)
+        searchstring = "formation"
+        if type.eql? "COMP"
+            searchstring = "role"
+        elsif type.eql? "NOMI"
+            searchstring = "nomination"
+        end 
         benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&page=0&pageInfo=true&perPage=10&structure='+ul)
 
         competence_ul = {}
@@ -71,7 +77,7 @@ class CompetencesClass
         benevoles['list'].each do | benevole |
             # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
         
-            ret = benevoleWithoutCompetence(benevole['id'], competence)
+            ret = benevoleWithoutCompetence(benevole['id'], competenceid, type)
             if ret==true
                 comp_bene = {}
                 comp_bene['nivol']=benevole['id']
@@ -161,13 +167,13 @@ class CompetencesClass
         return ret
     end
 
-    def benevoleWithoutCompetence(nivol, competence)
+    def benevoleWithoutCompetence(nivol, competenceid, type)
         ret = true
            
         formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
         
         formations.each do | formation |
-            if formation['formation']['code']==competence
+            if formation['formation']['id']==competenceid
                 ret = false
             end
         end    

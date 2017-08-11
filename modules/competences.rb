@@ -33,7 +33,7 @@ module Sinatra
                 "#{comp_ret.to_json}"
             end
 
-            app.get '/benevoles/competences/:competence/yes' do
+            app.get '/competences/:competence/yes' do
                 begin
                     comp = CompetencesClass.new(get_connexion['pegass'])
                     comp_ret = comp.listStructureWithCompetence(params['competence'], params['ul'], params['page'])
@@ -46,11 +46,11 @@ module Sinatra
                 "#{comp_ret.to_json}"
             end
 
-            app.get '/benevoles/competences/:competence/no' do
+            app.get '/competences/:type/:competenceid/no' do
                 begin
                     # # logger.error "search competence (no) #{params['competence']}"
                     comp = CompetencesClass.new(get_connexion['pegass'])
-                    comp_ret = comp.listStructureWithoutCompetence(params['competence'], params['ul'], params['page'])
+                    comp_ret = comp.listStructureWithoutCompetence(params['competenceid'], params['type'], params['ul'], params['page'])
                     status 200
                 rescue => exception
                     # logger.error exception
