@@ -8,6 +8,9 @@ module Sinatra
         def self.registered(app)
 
             app.get '/connect' do
+
+                result = []
+
                 begin    
 
                     connexion=get_connexion

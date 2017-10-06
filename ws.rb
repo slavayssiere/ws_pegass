@@ -40,17 +40,22 @@ class PegassApp < Sinatra::Base
       gaia = Gaia.new
 
       if(request.env['HTTP_USERNAME'])
-        res_pegass, pegassConnect = pegass.connect(request.env['HTTP_USERNAME'], request.env['HTTP_PASSWORD'])
+        logger.info "test connexion gaia"
         res_gaia, gaiaConnect = gaia.connect(request.env['HTTP_USERNAME'], request.env['HTTP_PASSWORD'])
-        params['pegass']=pegass
+        logger.info "test connexion pegass"
+        res_pegass, pegassConnect = pegass.connect_sso(request.env['HTTP_USERNAME'], request.env['HTTP_PASSWORD'])
+        
         params['gaia']=gaia
+        params['pegass']=pegass
         params['res_pegass']=res_pegass
         params['res_gaia']=res_gaia
         params['pegass_connect']=pegassConnect
         params['gaia_connect']=gaiaConnect
+
       elsif(request.env['HTTP_F5_ST'])
-        res_pegass, pegassConnect = pegass.f5connect(request.env['HTTP_F5_ST'], request.env['HTTP_LASTMRH_SESSION'], request.env['HTTP_MRHSESSION'])
         res_gaia, gaiaConnect = gaia.SAMLconnect(request.env['HTTP_SAML'], request.env['HTTP_JSESSIONID'])
+        # res_pegass, pegassConnect = pegass.SAMLconnect(request.env['HTTP_SAML'], request.env['HTTP_JSESSIONID'])
+        res_pegass, pegass_connect = pegass.SAMLconnect(request.env['HTTP_F5_ST'], request.env['HTTP_LASTMRH_SESSION'], request.env['HTTP_MRHSESSION'], request.env['shibsession_name'], request.env['shibsession_value'])
         params['pegass']=pegass
         params['gaia']=gaia
         params['res_pegass']=res_pegass
