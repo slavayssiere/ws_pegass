@@ -14,7 +14,7 @@ module Sinatra
                     benevoles = connexion['pegass'].callUrl('/crf/rest/utilisateur?action='+params['ul']+'&page=0&pageInfo=true&perPage=200&structure='+params['ul'])
                     status 200
                 rescue => exception
-                    # logger.error exception
+                    # puts exception.inspect
                     status 500
                 end
 

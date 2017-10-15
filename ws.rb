@@ -55,7 +55,7 @@ class PegassApp < Sinatra::Base
       elsif(request.env['HTTP_F5_ST'])
         res_gaia, gaiaConnect = gaia.SAMLconnect(request.env['HTTP_SAML'], request.env['HTTP_JSESSIONID'])
         # res_pegass, pegassConnect = pegass.SAMLconnect(request.env['HTTP_SAML'], request.env['HTTP_JSESSIONID'])
-        res_pegass, pegass_connect = pegass.SAMLconnect(request.env['HTTP_F5_ST'], request.env['HTTP_LASTMRH_SESSION'], request.env['HTTP_MRHSESSION'], request.env['shibsession_name'], request.env['shibsession_value'])
+        res_pegass, pegass_connect = pegass.SAMLconnect(request.env['HTTP_F5_ST'], request.env['HTTP_LASTMRH_SESSION'], request.env['HTTP_MRHSESSION'], request.env['HTTP_SHIBSESSION_NAME'], request.env['HTTP_SHIBSESSION_VALUE'])
         params['pegass']=pegass
         params['gaia']=gaia
         params['res_pegass']=res_pegass
@@ -74,7 +74,7 @@ class PegassApp < Sinatra::Base
 
     response.headers['Access-Control-Allow-Origin'] = "*"
     # Needed for AngularJS
-    response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization, username, password, F5-ST, LastMRH-Session, MRHSession, JSESSIONID, SAML"
+    response.headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept, Authorization, username, password, F5-ST, LastMRH-Session, MRHSession, JSESSIONID, SAML, shibsession_name, shibsession_value"
 
     halt 200
   end

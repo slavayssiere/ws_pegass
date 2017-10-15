@@ -172,6 +172,7 @@ class Pegass
         cookie_session.origin = "https://pegass.croix-rouge.fr/my.policy"
         @agent.cookie_jar.add(cookie_session) 
         
+        puts "shibsession_name: #{shibsession_name} & shibsession_value : #{shibsession_value}"
         cookie_session = Mechanize::Cookie.new(shibsession_name, shibsession_value)
         cookie_session.domain = "pegass.croix-rouge.fr"
         cookie_session.path = "/"
