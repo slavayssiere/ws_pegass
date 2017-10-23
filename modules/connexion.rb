@@ -27,7 +27,7 @@ module Sinatra
                     end
 
                 rescue => exception
-                    # logger.error exception
+                    puts exception
                     status 500
                 end
                 

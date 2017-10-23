@@ -20,10 +20,12 @@ class Gaia
         @agent = Mechanize.new { |a|
             a.post_connect_hooks << lambda { |_,_,response,_|
                 if response.content_type.nil? || response.content_type.empty?
-                response.content_type = 'text/html'
+                    response.content_type = 'text/html'
                 end
             }
         }
+
+        @agent.agent.http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         @agent.user_agent_alias = 'Linux Firefox'
         @agent.redirect_ok = false
         @agent.cookie_jar.clear!

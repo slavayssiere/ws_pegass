@@ -18,7 +18,8 @@ class Pegass
         @url_identification = 'https://id.authentification.croix-rouge.fr' # 'https://id.authentification.croix-rouge.fr'
         
         @url_sso = 'https://pegass.croix-rouge.fr/Shibboleth.sso/SAML2/POST'
-        @agent = Mechanize.new 
+        @agent = Mechanize.new
+        @agent.agent.http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         @agent.user_agent_alias = 'Linux Firefox'
         #@agent.log = Logger.new(STDOUT)
     end
