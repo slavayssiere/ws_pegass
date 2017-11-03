@@ -62,7 +62,7 @@ class PegassBot
         params = {}
 
         @logger.info "connection to pegass"
-        res_pegass, pegassConnect = pegass.connect(ENV['PEGASS_LOGIN'], ENV['PEGASS_PASSWORD'])
+        res_pegass, pegassConnect = pegass.connect_sso(ENV['PEGASS_LOGIN'], ENV['PEGASS_PASSWORD'])
 
         @logger.info "connection to gaia"
         res_gaia, gaiaConnect = gaia.connect(ENV['PEGASS_LOGIN'], ENV['PEGASS_PASSWORD'])
@@ -77,6 +77,9 @@ class PegassBot
 
     def discussion_bot(data)
         @si_crf, @pegass, @gaia=connect_pegass
+
+
+        puts data.text
 
         case data.text
         when /[pP]egass hi/ then
@@ -97,7 +100,7 @@ class PegassBot
             @client.message channel: data.channel, text: msg
         when /[pP]egass list[es]* competence[s]*/
             pegass_list_role(data)
-        when /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*'(?<match_data>[a-zA-Z0-9 ]*)'/
+        when /[pP]egass list[es]* '(?<match_data>[a-zA-Z0-9 ]*)'/
             pegass_list_competence(data)
         when /[pP]egass quoi de neuf ?/
             pegass_quoi_neuf(data)
@@ -106,6 +109,8 @@ class PegassBot
         when /^[pP]egass/ then
             @logger.info "Pegass, text non compris: #{data.text}"
             @client.message channel: data.channel, text: "Sorry <@#{data.user}>, what?"
+        else
+            puts data.text
         end
     end
 
@@ -114,12 +119,12 @@ class PegassBot
         @logger.info "Pegass help"
         begin
             msg = "Salut <@#{data.user}>, ce bot est une interface à Pegass, tu peux utiliser les commandes:\n"
-            msg += " - 'Pegass hi', pour me dire bonjour. /[pP]egass hi/\n"
-            msg += " - 'Pegass qui est le plus fort ?', pour flatter ton ego. /[pP]egass qui est le plus fort ?/\n"
-            msg += " - 'pegass list competences', pour avoir la liste des competences, nomination et formations. /[pP]egass list[es]* competence[s]*/"
-            msg += " - 'Pegass list ul 11', pour avoir la liste des gens de l'ul. /[pP]egass list ul 11/\n"
-            msg += " - 'Pegass liste '-' ', où - est remplacé par une compétence/nomination/formation recherchée (ex:PSE1). /[pP]egass [a-zA-Z ]*list[e]* [a-z0-9 ]*(?<match_data>[A-Z0-9]*)/\n"
-            msg += " - 'Pegass quoi de neuf ?' pour avoir les activités du jour. /[pP]egass quoi de neuf ?/\n"
+            msg += " - 'Pegass hi', pour me dire bonjour.\n"
+            msg += " - 'Pegass qui est le plus fort ?', pour flatter ton ego.\n"
+            msg += " - 'pegass list competences', pour avoir la liste des competences, nomination et formations.\n"
+            msg += " - 'Pegass list ul 11', pour avoir la liste des gens de l'ul.\n"
+            msg += " - 'Pegass list '-' ', où - est remplacé par une compétence/nomination/formation recherchée (ex:PSE1).\n"
+            msg += " - 'Pegass quoi de neuf ?' pour avoir les activités du jour.\n"
             msg += "et enfin 'Pegass help' pour avoir cette commande"
             @client.message channel: data.channel, text: msg
         rescue => exception

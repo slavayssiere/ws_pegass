@@ -65,9 +65,8 @@ class Pegass
             doc = Nokogiri::Slop <<-EOXML
                 #{page_redirect_sso.body}
             EOXML
-            # puts doc.html.body.apm_do_not_touch.form.div.input.last.attributes.inspect
-            saml_response = doc.html.body.apm_do_not_touch.form.div.input.first.attributes['value'].value
-            relay_state = doc.html.body.apm_do_not_touch.form.div.input.first.attributes['value'].value
+            saml_response = doc.html.body.apm_do_not_touch.form.input.first.attributes['value'].value
+            relay_state = doc.html.body.apm_do_not_touch.form.input.first.attributes['value'].value
         rescue => excp
             puts excp.inspect
         end
