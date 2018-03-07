@@ -15,7 +15,7 @@ require './modules/version'
 
 class PegassApp < Sinatra::Base
 
-  logger filename: "ws_pegass.log", level: :trace
+  logger filename: "/dev/stdout", level: :trace
   
   register Sinatra::CrossOrigin
   register Sinatra::PegassApp::Connexion
@@ -44,6 +44,7 @@ class PegassApp < Sinatra::Base
         res_gaia, gaiaConnect = gaia.connect(request.env['HTTP_USERNAME'], request.env['HTTP_PASSWORD'])
         logger.info "test connexion pegass"
         res_pegass, pegassConnect = pegass.connect_sso(request.env['HTTP_USERNAME'], request.env['HTTP_PASSWORD'])
+        logger.info "connexion successed"
         
         params['gaia']=gaia
         params['pegass']=pegass
