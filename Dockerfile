@@ -1,8 +1,7 @@
-FROM ruby:2.3
+FROM ruby:2.5-alpine
 MAINTAINER Sebastien Lavayssiere <sebastien.lavayssiere@gmail.com>
 
-RUN apt-get update && \
-    apt-get install -y net-tools
+RUN apk add --no-cache net-tools g++ make
 
 # Install gems
 ENV APP_HOME /app

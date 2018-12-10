@@ -18,10 +18,5 @@ rerun rackup
 
 ```
 docker build -t slavayssiere/ws_pegass .
-docker build -t slavayssiere/bot_pegass -f ./DockerfileBot
 docker run --name ws_pegass_server -p 3000 -d ws_pegass
 ```
-
-sudo docker run --name pegass-bot -d --env PEGASS_LOGIN=* --env PEGASS_PASSWORD=* --env SLACK_API_TOKEN=* slavayssiere/bot_pegass
-
-sudo docker run --name pegass-ws -p 8080:8080 -d slavayssiere/ws_pegass
