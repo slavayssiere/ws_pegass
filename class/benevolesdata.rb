@@ -29,12 +29,14 @@ class BenevolesData
         moyenscom = {}
         moyenscom['list']=[]
 
-        list_nivol['list'].each do | benevole |  
-            if(benevole['nivol'])          
-                moyenscom['list'].push benevole(benevole['nivol'])
-            else
-                moyenscom['list'].push benevole(benevole['id'])
-            end                                    
+        if list_nivol.key?('list')
+            list_nivol['list'].each do | benevole |
+                if(benevole['nivol'])          
+                    moyenscom['list'].push benevole(benevole['nivol'])
+                else
+                    moyenscom['list'].push benevole(benevole['id'])
+                end                                    
+            end
         end
         return moyenscom
     end

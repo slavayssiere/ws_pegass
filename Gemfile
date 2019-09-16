@@ -9,4 +9,5 @@ gem 'sinatra-logger', '>= 0.2.6'
 gem 'eventmachine'
 gem 'faye-websocket'
 gem 'nokogiri'
+gem 'redis'
 

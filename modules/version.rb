@@ -1,32 +1,10 @@
 require 'sinatra/base'
 require 'net/http'
-require 'slack-ruby-client'
 
 module Sinatra
   module PegassApp
     module Version
         def self.registered(app)
-
-            app.get '/' do
-             
-                Slack.configure do |config|
-                    config.token = ENV['SLACK_API_TOKEN']
-                    fail 'Missing ENV[SLACK_API_TOKEN]!' unless config.token
-                end
-
-                client = Slack::Web::Client.new
-                client.auth_test
-
-                client.chat_postMessage(channel: '#general', text: 'Hello World', as_user: true)
-
-                result = { 
-                    :name => "ws_pegass",
-                    :author => "sebastien.lavayssiere@gmail.com"
-                }
-                
-                "#{result.to_json}"
-            end
-
             app.get '/version' do
                 # result = { 
                 #     :version => "2.0.2" 

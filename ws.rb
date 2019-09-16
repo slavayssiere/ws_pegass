@@ -36,8 +36,12 @@ class PegassApp < Sinatra::Base
   helpers do
     def get_connexion
       params = {}
-      pegass = Pegass.new
-      gaia = Gaia.new
+      logger.info "connect to redis... #{ENV['REDIS_HOST']}"
+      redis = Redis.new(host: IPSocket.getaddress(ENV['REDIS_HOST']))
+      logger.info "connected to redis !"
+
+      pegass = Pegass.new(logger, redis)
+      gaia = Gaia.new(logger, redis)
 
       if(request.env['HTTP_USERNAME'])
         logger.info "test connexion gaia"
@@ -70,6 +74,7 @@ class PegassApp < Sinatra::Base
   end
   
   options "*" do
+
     # response.headers["Allow"] = "HEAD,GET,PUT,DELETE,OPTIONS"
     response.headers['Access-Control-Allow-Methods'] = "HEAD,GET,PUT,DELETE,POST,OPTIONS"
 

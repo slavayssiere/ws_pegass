@@ -1,9 +1,11 @@
 require 'net/http'
 require 'mechanize'
 require 'json'
+require 'redis'
+require 'sinatra/logger'
 
 class Gaia
-    
+
     attr_accessor :url_gaia
     attr_accessor :url_identification
     attr_accessor :agent
@@ -14,7 +16,10 @@ class Gaia
     attr_accessor :saml
     attr_accessor :jsessionid
      
-    def initialize()
+    attr_accessor :redis
+    attr_accessor :logger
+
+    def initialize(log, redis)
         @url_identification = 'https://id.authentification.croix-rouge.fr' # 'https://id.authentification.croix-rouge.fr'
         @url_gaia = 'https://gaia.croix-rouge.fr'
         @agent = Mechanize.new { |a|
@@ -29,6 +34,9 @@ class Gaia
         @agent.user_agent_alias = 'Linux Firefox'
         @agent.redirect_ok = false
         @agent.cookie_jar.clear!
+
+        @logger = log
+        @redis = redis
     end
 
     def connect(username, password)
@@ -88,7 +96,7 @@ class Gaia
 
         @agent.cookie_jar.each do |cookie|  
             if cookie.to_s.include? 'SAML'
-                result = callUrl('/crf-benevoles/users/userSession') 
+                result = callUrl('/crf-benevoles/users/userSession', cache=false) 
                 @saml=cookie.to_s.split('=')[1]   
                 boolConnect = true                    
             end 
@@ -134,7 +142,7 @@ class Gaia
             # /crf/rest/mazonegeo
             # /crf/rest/acl/config
             # /crf/rest/structure/mastructureaffichee
-          result = callUrl('/crf-benevoles/users/userSession')
+          result = callUrl('/crf-benevoles/users/userSession', cache=false)
           result['SAML']=@saml
           result['JSESSIONID']=@jsessionid
           result['state']=boolConnect
@@ -154,13 +162,30 @@ class Gaia
             # logger.info cookie.inspect
         end
     end
-    
-    def callUrl(path)
+
+    def callUrl(path, cache=true, time_cache=60)
         # # logger.info "Get " + path
-        url_path = @url_gaia + path        
-        page = @agent.get url_path
-        # # logger.info page.body        
-        return JSON.parse(page.body)
+        get_cache = true
+        if cache 
+            if @redis.exists(path)
+                page = @redis.get(path)
+                logger.info "get path from redis: #{path}"
+                page_parse = JSON.parse(page)
+                get_cache = false
+            end
+        end
+        
+        if get_cache
+            url_path = @url_gaia + path 
+            page = @agent.get url_path
+            page_parse = JSON.parse(page.body)
+            if cache 
+                @redis.set(path, page.body)
+                @redis.expire(path, time_cache)
+            end
+        end
+
+        return page_parse
     end
     
     def putUrl(path, data)

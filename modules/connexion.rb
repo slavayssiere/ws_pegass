@@ -27,8 +27,8 @@ module Sinatra
                     end
 
                 rescue => exception
-                    puts exception
-                    status 500
+                    # logger.info exception
+                    status 401
                 end
                 
                 "#{result.to_json}"

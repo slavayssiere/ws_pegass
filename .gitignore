@@ -46,3 +46,5 @@ test.rb
 
 version.json
 version.json.bak
+.vscode/*
+env.sh

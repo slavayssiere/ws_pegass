@@ -2,6 +2,7 @@ require 'net/http'
 require 'mechanize'
 require 'json'
 require 'nokogiri'
+require 'redis'
 
 class Pegass
     
@@ -12,8 +13,11 @@ class Pegass
     attr_accessor :last
     attr_accessor :session
     attr_accessor :shibsession
+
+    attr_accessor :redis
+    attr_accessor :logger
      
-    def initialize()
+    def initialize(log, redis)
         @url_pegass = 'https://pegass.croix-rouge.fr'
         @url_identification = 'https://id.authentification.croix-rouge.fr' # 'https://id.authentification.croix-rouge.fr'
         
@@ -22,6 +26,9 @@ class Pegass
         @agent.agent.http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         @agent.user_agent_alias = 'Linux Firefox'
         #@agent.log = Logger.new(STDOUT)
+
+        @logger = log
+        @redis = redis
     end
 
     def connect_sso(username, password)
@@ -104,7 +111,7 @@ class Pegass
         begin 
             @agent.cookie_jar.each do |site|
                 if site.to_s.include? 'F5_ST'  
-                    result = callUrl('/crf/rest/gestiondesdroits') 
+                    result = callUrl('/crf/rest/gestiondesdroits', cache=false) 
                     result['F5_ST']=site.to_s.split('=')[1]
                     @f5=result['F5_ST']
                     boolConnect = true            
@@ -132,7 +139,7 @@ class Pegass
         }
         result['state']=boolConnect
         begin
-            result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
+            result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}", cache=false)
             isInTeamFormat, role = getUserInfo(result['utilisateur']['id'])
             result['isInTeamFormat']=isInTeamFormat
             result['role']=role
@@ -144,13 +151,12 @@ class Pegass
         timelog = Time.new
         puts "#{timelog.inspect} tentative de connexion de #{username}, #{boolConnect}"
 
-        puts result.inspect
+        # puts result.inspect
 
         return result, boolConnect
     end
 
     def SAMLconnect(token_f5, last, session, shibsession_name, shibsession_value)          
-       
         cookie_f5 = Mechanize::Cookie.new("F5_ST", token_f5)
         cookie_f5.domain = "pegass.croix-rouge.fr"
         cookie_f5.path = "/"
@@ -194,10 +200,14 @@ class Pegass
             # /crf/rest/mazonegeo
             # /crf/rest/acl/config
             # /crf/rest/structure/mastructureaffichee
-          result = callUrl('/crf-benevoles/users/userSession')
+          result = callUrl('/crf/rest/gestiondesdroits', cache=false)
           result['SAML']=@saml
           result['JSESSIONID']=@jsessionid
           result['state']=boolConnect
+          result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}", cache=false)
+          isInTeamFormat, role = getUserInfo(result['utilisateur']['id'])
+          result['isInTeamFormat']=isInTeamFormat
+          result['role']=role
           #result['admin']= callUrl("/crf/rest/gestiondesdroits/peutadministrerutilisateur/?utilisateur=#{result['utilisateur']['id']}")
         rescue => exception
           # logger.error exception
@@ -244,11 +254,29 @@ class Pegass
         end
     end
     
-    def callUrl(path)
+    def callUrl(path, cache=true, time_cache=600)
         # # logger.info "Get " + path
-        url_path = @url_pegass + path        
-        page = @agent.get url_path
-        return JSON.parse(page.body)
+        get_cache = true
+        if cache 
+            if @redis.exists(path)
+                page = @redis.get(path)
+                puts "get path from redis: #{path}"
+                page_parse = JSON.parse(page)
+                get_cache = false
+            end
+        end
+        
+        if get_cache
+            url_path = @url_pegass + path 
+            page = @agent.get url_path
+            page_parse = JSON.parse(page.body)
+            if cache 
+                @redis.set(path, page.body)
+                @redis.expire(path, time_cache)
+            end
+        end
+
+        return page_parse
     end
     
     def putUrl(path, data)

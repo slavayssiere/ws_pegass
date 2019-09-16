@@ -1,12 +1,15 @@
 require_relative './pegass'
 require 'json'
+require 'sinatra/logger'
 
 class RecyclagesClass
 
     attr_accessor :pegass
+    attr_accessor :logger
     
-    def initialize(pegassConnection)
+    def initialize(pegassConnection, log)
         @pegass = pegassConnection
+        @logger = log
     end
     
     def listStructure(ul)
@@ -56,12 +59,14 @@ class RecyclagesClass
     end
     
     def benevoleCompetence(nivol, competenceid)
-        formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
+        formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}", time_cache=3600)
+        puts formations
         endOfYear = Date.parse("#{Date.today.year}-12-31")
         
         dateRecyclage = ""
         bARecycler = false
         outOfdate = false
+        equivalence = false
         recyclage_bene={}
         formations.each do | formation |
             if formation['formation']['id'] == competenceid
@@ -79,11 +84,43 @@ class RecyclagesClass
                         outOfdate = true
                     end
                 end
-                break
+            end
+            ###
+            #
+            # IPS: 113
+            # IPSEN: 224
+            # FPSC: 286
+            # FPS: 288
+            # FFPSC: 294
+            # FFPS: 292
+            #
+            # PSE1: 166
+            # PSE2: 167
+            # CI: 17
+            # FCI: 25
+            # 
+            ###
+
+            if competenceid == "286" # dans le cas ou on cherche une compétence FPSC
+                if ["288", "292", "294"].include? formation['formation']['id'] # et que le bénévole a une compétence FPS, FFPS, FFPSC
+                    equivalence = true
+                end 
+            end
+
+            if competenceid == "288" # dans le cas ou on cherche une compétence FPS
+                if ["292", "25"].include? formation['formation']['id'] # et que le bénévole a une compétence FFPS, FCI
+                    equivalence = true
+                end 
+            end
+
+            if competenceid == "113" # dans le cas ou on cherche une compétence IPS
+                if ["286", "288", "292", "294"].include? formation['formation']['id'] # et que le bénévole a une compétence FPSC, FPS, FFPS, FFPSC
+                    equivalence = true
+                end 
             end
         end
         
-        return bARecycler, outOfdate, dateRecyclage
+        return bARecycler, outOfdate, dateRecyclage, equivalence
     end
     
     def listStructureCompetence(competenceid, ul, page)
@@ -102,7 +139,7 @@ class RecyclagesClass
                 # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
             
                 data_bene={}
-                bARecycler, outOfdate, dateRecyclage = benevoleCompetence(benevole['id'], competenceid)
+                bARecycler, outOfdate, dateRecyclage, equivalence = benevoleCompetence(benevole['id'], competenceid)
                 
                 if(bARecycler)
                     # # logger.info "#{benevole['nom']}"
@@ -110,6 +147,7 @@ class RecyclagesClass
                     data_bene['nom']=benevole['nom']
                     data_bene['prenom']=benevole['prenom']
                     data_bene['date']=dateRecyclage
+                    data_bene['equivalence']=equivalence
                     
                     if(outOfdate)
                         unite['out'].push data_bene
@@ -119,13 +157,11 @@ class RecyclagesClass
                 end 
             end
         rescue => exception
-            puts exception
+            @logger.info exception
         end
         
         unite['last_page']=page
         unite['pages']=benevoles['pages']
-
-        puts unite
 
         return unite
     end

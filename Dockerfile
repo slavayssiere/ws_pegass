@@ -6,6 +6,7 @@ RUN apk add --no-cache net-tools g++ make
 # Install gems
 ENV APP_HOME /app
 ENV HOME /root
+ENV REDIS_HOST redis-slave
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 COPY Gemfile* $APP_HOME/

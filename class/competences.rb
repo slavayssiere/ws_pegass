@@ -1,12 +1,15 @@
 require_relative './pegass'
 require 'json'
+require 'sinatra/logger'
 
 class CompetencesClass
 
     attr_accessor :pegass
+    attr_accessor :logger
     
-    def initialize(pegassConnection)
+    def initialize(pegassConnection, log)
         @pegass = pegassConnection
+        @logger = log
     end    
     
     def listStructureWithCompetence(competence, ul, page)
@@ -34,6 +37,37 @@ class CompetencesClass
         competence_ul['pages']=benevoles['pages']
         return competence_ul
     end    
+
+    def listStructureTC(ul, page)
+        benevoles = @pegass.callUrl('/crf/rest/utilisateur?page='+page+'&pageInfo=true&perPage=10&structure='+ul)
+
+        competence_ul = {}
+        competence_ul['list']=[]
+        benevoles['list'].each do | benevole |
+            # {"id"=>"nivol", "structure"=>{"id"=>899}, "nom"=>"name", "prenom"=>"first", "actif"=>true}
+        
+            retPSC = benevoleWithCompetence(benevole['id'], "PSC1 IRR") # PSC1 - 276
+            retCRB = benevoleWithCompetence(benevole['id'], "CRB") # CRB - 302
+            retTCAU = benevoleWithCompetence(benevole['id'], "TCAU") # TCAU - 282
+            retTCAS = benevoleWithCompetence(benevole['id'], "TCAS") # TCAS - 401
+                        
+            comp_bene = {}
+            comp_bene['nivol']=benevole['id']
+            comp_bene['prenom']=benevole['prenom']
+            comp_bene['nom']=benevole['nom']
+            comp_bene['PSC']=retPSC
+            comp_bene['CRB']=retCRB
+            comp_bene['TCAU']=retTCAU
+            comp_bene['TCAS']=retTCAS
+
+            competence_ul['list'].push comp_bene   
+                        
+        end
+        
+        competence_ul['last_page']=page
+        competence_ul['pages']=benevoles['pages']
+        return competence_ul
+    end
 
     def listStructureWithCompetenceId(competenceid, type, ul, page)
         searchstring = "formation"
@@ -145,8 +179,8 @@ class CompetencesClass
         ret = false
         endOfYear = Date.parse("#{Date.today.year}-12-31")
         
-        formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")  
-        formations.each do | formation |            
+        formations = pegass.callUrl("/crf/rest/formationutilisateur?utilisateur=#{nivol}")
+        formations.each do | formation |
             if formation['formation']['code']==competence
                 if(formation['dateRecyclage'])
                     dateRecyclage = Date.parse formation['dateRecyclage']
@@ -200,7 +234,7 @@ class CompetencesClass
                     ret['formations'].push block
                 end
             rescue => exception
-                logger.info exception
+                @logger.info exception
             end
        end
        
@@ -240,7 +274,7 @@ class CompetencesClass
                     puts "case2: #{competence['libelle']}"
                 end
             rescue => exception
-                logger.error exception
+                @logger.error exception
             end
         end
         return cid, type

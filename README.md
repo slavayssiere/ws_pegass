@@ -1,7 +1,9 @@
 # ws_pegass
+
 Webservice to Pegass
 
-# Lancement en local
+## Lancement en local
+
 Pour installer, après avoir cloner le projet
 
 ```gem install bundler```
@@ -10,13 +12,16 @@ Pour installer, après avoir cloner le projet
 
 Vous pouvez ajouter 'rack' et 'rerun' avec une commande 'gem install'.
 
-```
+```bash
 rerun rackup
 ```
 
-#Via Docker
+## Via Docker
 
-```
-docker build -t slavayssiere/ws_pegass .
-docker run --name ws_pegass_server -p 3000 -d ws_pegass
+```bash
+docker run -d --name test-pegass -p 8080:8080 test:latest
+docker run -d --name some-redis -e REDIS_HOST=localhost -p 6379:6379 redis:latest
+
+source ../env.sh
+python3 test.py
 ```

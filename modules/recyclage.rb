@@ -9,11 +9,11 @@ module Sinatra
 
             app.get '/benevoles/recyclages' do
                 begin   
-                    recyclage = RecyclagesClass.new(get_connexion['pegass'])
+                    recyclage = RecyclagesClass.new(get_connexion['pegass'], logger)
                     recyclages = recyclage.listStructure(params['ul'])
                     status 200
                 rescue => exception
-                    # logger.error exception
+                    logger.error exception
                     status 500
                 end
                 
@@ -22,7 +22,7 @@ module Sinatra
 
             app.get '/benevoles/recyclages/:competenceid' do
                 begin
-                    recyclage = RecyclagesClass.new(get_connexion['pegass'])
+                    recyclage = RecyclagesClass.new(get_connexion['pegass'], logger)
                     recyclages = recyclage.listStructureCompetence(params['competenceid'], params['ul'], params['page'])
                     status 200
                 rescue => exception
@@ -35,11 +35,11 @@ module Sinatra
 
             app.get '/benevoles/recyclagesdd/:competenceid' do
                 begin
-                    recyclage = RecyclagesClass.new(get_connexion['pegass'])
+                    recyclage = RecyclagesClass.new(get_connexion['pegass'], logger)
                     recyclages = recyclage.listStructureCompetenceDD(params['competenceid'], params['dd'], params['page'])
                     status 200
                 rescue => exception
-                    # logger.error exception
+                    logger.error exception
                     status 500
                 end
                 
